@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -13,6 +13,9 @@
     "@taquito/beacon-wallet": "^17.5.0",
     "@taquito/taquito": "^17.5.0",
     "@vueuse/core": "^10.7.1",
+    "axios": "^1.6.5",
+    "konva": "^9.3.0",
+    "pocketbase": "^0.20.2",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5",
     "vue3-toastify": "^0.2.1"

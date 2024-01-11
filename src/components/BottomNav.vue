@@ -1,6 +1,6 @@
 <template>
     <footer>
-        <div class="text-center">Created with ❤️ for Tezos community</div>
+        <div class="text-center">Created by B. Grit ❤️ for Tezos community</div>
     </footer>
 </template>
 

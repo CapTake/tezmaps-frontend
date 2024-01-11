@@ -95,6 +95,8 @@ const connection = reactive({
 
 provide('originate', async ({ code, storage, init }) => Tezos.wallet.originate({ code, storage, init }).send())
 
+provide('contract', async (address) => Tezos.wallet.at(address))
+
 provide('walletConnection', connection)
 
 provide('connectWallet', connectWallet)

@@ -1,12 +1,11 @@
 <template>
     <nav>
         <router-link to="/" class="flex gap-1 items-center">
-            <Logo class="text-[#2196f3] w-8 h-8"/><span class="font-bold text-slate-600 text-xl">TEZI</span>
+            <Logo class="text-[#2196f3] w-8 h-8"/><span class="font-bold text-slate-600 text-xl">Tezmaps</span>
         </router-link>
         <div class="grow"></div>
         <div @click="menu = false" class="md:flex md:justify-between gap-5 md:flex-row flex-col absolute md:static bg-white top-16 right-4 rounded shadow-md md:shadow-none md:p-1 p-5" :class="{hidden: !menu, flex: menu}">
-            <router-link to="/explore" class="transition-all hover:text-blue-500">Create</router-link>
-            <router-link to="/explore" class="transition-all hover:text-blue-500">Explore</router-link>
+            <router-link to="/" class="transition-all hover:text-blue-500">Explore</router-link>
             <router-link to="/trade" class="transition-all hover:text-blue-500">Marketplace</router-link>
             <router-link to="/docs" class="transition-all hover:text-blue-500">Docs</router-link>
         </div>
