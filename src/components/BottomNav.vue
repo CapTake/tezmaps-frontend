@@ -1,6 +1,8 @@
 <template>
     <footer>
-        <div class="text-center">Created by B. Grit ❤️ for Tezos community</div>
+        <div class="text-center">Created by 
+            <a href="https://twitter.com/resilence11" target="_blank" rel="noopener noreferrer nofollow">B. Grit</a> ❤️ for Tezos community
+        </div>
     </footer>
 </template>
 

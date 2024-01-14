@@ -5,7 +5,11 @@
         </router-link>
         <div class="grow"></div>
         <div @click="menu = false" class="md:flex md:justify-between gap-5 md:flex-row flex-col absolute md:static bg-white top-16 right-4 rounded shadow-md md:shadow-none md:p-1 p-5" :class="{hidden: !menu, flex: menu}">
-            <router-link to="/" class="transition-all hover:text-blue-500">Explore</router-link>
+            <router-link v-if="isConnected" to="/balance" class="transition-all hover:text-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
+                </svg>
+            </router-link>
             <router-link to="/trade" class="transition-all hover:text-blue-500">Marketplace</router-link>
             <router-link to="/docs" class="transition-all hover:text-blue-500">Docs</router-link>
         </div>
@@ -21,6 +25,8 @@
 <script setup>
 import Logo from './Logo.vue'
 import SyncButton from './SyncButton.vue'
-import { ref } from 'vue'
+import { inject, ref, computed } from 'vue'
 const menu = ref(false)
+const account = inject('walletConnection')
+const isConnected = computed(() => !!account?.address)
 </script>

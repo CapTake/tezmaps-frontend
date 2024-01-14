@@ -5,11 +5,17 @@
         <div class="absolute rounded-lg shadow-md border text-sm border-slate-100 bg-white py-1.5 px-3 pointer-events-none trasition-all" :style="tooltipStyle">
             {{ hoveredLevel }}.tezmap
         </div>
+        <div v-if="loading" class="bg-white rounded-lg shadow p-8 absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+            <svg aria-hidden="true" class="w-12 h-12 text-slate-400 animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+            </svg>
+        </div>
     </div>
 </template>
 
 <script setup>
-import { onMounted, watchEffect, ref, computed, reactive } from 'vue';
+import { onMounted, watchEffect, ref, computed, reactive, nextTick } from 'vue';
 import { watchDebounced } from '@vueuse/core'
 import api from '../util/api'
 import axios from 'axios'
@@ -28,6 +34,7 @@ const MAX_SCALE = 12
 const emit = defineEmits(['selected'])
 const ready = ref(false)
 const loading = ref(false)
+const items = ref([])
 const container = ref(null)
 const hoveredLevel = ref(null)
 const tooltipStyle = reactive({
@@ -48,27 +55,25 @@ const tooltipMove = (e) => {
 }
 
 const blocks = computed(() => {
-    const { offset, limit } = props
     const result = []
-    for (let i = offset; i < offset + limit; i++) {
-        result.push([i, 0])
+    const { offset, limit } = props
+    try {
+        for (let i = offset; i < offset + limit; i++) {
+            result.push([i, 0])
+        }
+        for (const id of items.value) {
+            result[id % limit] = [id, 1]
+        }
+    } catch (e) {
+        console.log(e)
     }
-
-    for (const id of items.value) {
-        result[id] = [id, 1]
-    }
-
     return result
 })
-
-const items = ref([])
 
 watchDebounced(
   props,
   async () => {
-    console.log(props.offset)
     await loadTezmaps(props)
-    init()
   },
   { debounce: 500, maxWait: 1000 },
 )
@@ -77,7 +82,9 @@ let stage = null
 
 let layer = null
 
-let blockSize = 12
+let textLayer = null
+
+let blockSize = 16
 
 let scaleBy = 1.1
 
@@ -88,10 +95,12 @@ const loadTezmaps = async ({ offset, limit }) => {
         if (!Array.isArray(data)) {
             throw new Error('Couldn`t read Tezmaps')
         }
-        items.value = data.map(({ id }) => Number(id))
+
+        items.value = data.map(({ id }) => Number(id)) || []
     } catch (e) {
         console.log(e)
     } finally {
+        init()
         loading.value = false
     }
 }
@@ -102,11 +111,11 @@ const stagePosition = (position, scale) => {
     const w = stage.width()
     const h = stage.height()
 
-    const rowWidth = stage.width() / blockSize
-    const cols = Math.ceil(props.limit / rowWidth)
+    const cols = Math.floor(stage.width() / blockSize)
+    const rows = Math.ceil(props.limit / cols)
 
-    const minOffsetX = - (w * scale - w)
-    const minOffsetY = (h - blockSize * cols) * scale
+    const minOffsetX = w - cols * blockSize * scale
+    const minOffsetY = h - blockSize * rows * scale
     
     x = Math.max(minOffsetX, Math.min(x, 0))
 
@@ -114,7 +123,7 @@ const stagePosition = (position, scale) => {
 
     stage.position({ x, y })
     
-    console.log(h, blockSize * 50, minOffsetY)
+    textLayer.visible(scale > 2.4)
 }
 
 const onWheel = (e) => {
@@ -132,8 +141,6 @@ const onWheel = (e) => {
     // how to scale? Zoom in? Or zoom out?
     let direction = e.evt.deltaY < 0 ? 1 : -1;
 
-    console.log(e.evt.deltaY)
-
     // when we zoom on trackpad, e.evt.ctrlKey is true
     // in that case lets revert direction
     if (e.evt.ctrlKey) {
@@ -142,8 +149,6 @@ const onWheel = (e) => {
 
     const newScale = direction > 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
-    console.log(direction, newScale)
-    
     if (newScale >= 1 && newScale <= MAX_SCALE) {
         stage.scale({ x: newScale, y: newScale });
         
@@ -173,24 +178,8 @@ const onDragMove = function (e) {
 
     stagePosition(target.position(), target.scaleX())
 }
-const inViewPort = (r1, r2) => {
 
-    let w1 = r1.width, h1 = r1.height;
-    let w2 = r2.width, h2 = r2.height;
-
-    let diff = {x: Math.abs((r1.x + w1/2) - (r2.x + w2/2)), 
-                y: Math.abs((r1.y + h1/2) - (r2.y + h2/2))};
-
-    let compWidth = (r1.width + r2.width)/2,
-        compHeight = (r1.height + r2.height)/2;
-
-    let hasOverlap = ((diff.x <= compWidth) && (diff.y <= compHeight)) 
-
-    return hasOverlap;
-}
 const onTouchMove = (e) => {
-    console.log(e)
-
     e.evt.preventDefault()
 
     stage.draggable(e.evt.touches.length === 1)
@@ -269,6 +258,8 @@ const onTouchEnd = () => {
     stage.draggable(true)
 }
 
+const OCCUPIED_COLOR = '#1976d2'
+
 const init = () => {
 
     stage = new Konva.Stage({
@@ -279,30 +270,56 @@ const init = () => {
     })
 
     layer = new Konva.Layer()
+    textLayer = new Konva.Layer({
+        visible: false,
+        listening: false,
+        draggable: false,
+    })
 
     stage.container().style.cursor = 'pointer'
 
     const rowWidth = Math.floor(props.width / blockSize)
 
     for (let i = 0; i < blocks.value.length; i++) {
+        if (!blocks.value[i]) continue
+    
         const [n, occupied] = blocks.value[i]
-        const x = (i % rowWidth) * blockSize
+        const name = `${n}`
+        const x = (i % rowWidth) * blockSize + 0.5
 
-        const y = Math.floor(i / rowWidth) * blockSize
+        const y = Math.floor(i / rowWidth) * blockSize + 0.5
+        const width = blockSize - 1
+        const height = blockSize - 1
 
-        const fill = occupied === 0 ? '#c0c0c0' : '#0d47a1' 
+        const fill = occupied === 0 ? '#c0c0c0' : OCCUPIED_COLOR
+
+        const text = new Konva.Text({
+            x,
+            y,
+            fontSize: 2,
+            fontFamily: 'monospace',
+            text: name,
+            width,
+            height,
+            fill: 'black',
+            align: 'center',
+            verticalAlign: 'middle'
+        })
+
+        textLayer.add(text)
 
         const block = new Konva.Rect({
-            x: x + 1,
-            y: y + 1,
-            width: blockSize - 1,
-            height: blockSize - 1,
+            x,
+            y,
+            width,
+            height,
             fill,
-            name: `${n}`,
+            name,
             opacity: 0.5,
             hitStrokeWidth: 0,
             shadowEnabled: false,
         })
+        block.occupied = occupied
 
         layer.add(block)
     }
@@ -324,9 +341,9 @@ const init = () => {
     layer.on('click', function (evt) {
         const {target} = evt
         if (target instanceof Konva.Rect) {
-            // alert('you clicked on target "' + target.name() + '"')
-            const level = blocks.value.find(([id]) => Number(target.name()) === id)
-            if (level) emit('selected', level)
+           // const level = blocks.value.find(([id]) => Number(target.name()) === id)
+            // if (level) 
+            emit('selected', [Number(target.name()), Number(target.occupied)])
         }
     })
 
@@ -349,21 +366,34 @@ const init = () => {
     })
 
     stage.add(layer)
+    stage.add(textLayer)
 
-    layer.draw()
+    stage.draw()
 
     ready.value = true
 }
 
-onMounted(async () => {
+const processCollectionMessage = ({ action, record: { c, p } }) => {
+    if (action !== 'create' || p !== 'tezmaps') return
+    const [id] = c.split('.')
+    const index = Number(id) % blocks.value.length
+    console.log(p, c, index)
+    const node = layer.findOne('.' + id)
+    if (node) {
+        node.occupied = 1
+        node.fill(OCCUPIED_COLOR)
+        layer.draw()
+    }
+}
 
+onMounted(async () => {
     await api.collection('tickets').subscribe('*', (message) => {
-        console.log(message)
+        processCollectionMessage(message)
+    }).catch(e => {
+        console.log(e)
     })
 
     await loadTezmaps(props)
-
-    init()
 })
 
 watchEffect(() => {
@@ -372,8 +402,6 @@ watchEffect(() => {
     stage.width(props.width || 500)
 
     stage.height(props.height || 300)
-
-    if (!loading.value) init()
 })
 </script>
 
