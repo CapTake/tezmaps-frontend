@@ -9,10 +9,10 @@
                 </svg>
             </div>
         </div>
-        <div v-else-if="items.length === 0" class="text center py-24">
+        <div v-else-if="items.length === 0" class="text-center py-40 w-full text-slate-400">
             There is nothing here yet :(
         </div>
-        <div v-else class="w-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 mb-8">
+        <div v-else class="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 xl:gap-3 mb-8">
             <article v-for="item in items" :key="item.id" class="border border-slate-50 rounded-lg shadow hover:shadow-lg px-3 md:px-5 bg-white relative font-mono tracking-tight">
                 <div class="py-2 text-xs text-slate-500 flex justify-between items-center uppercase">
                     {{ item.protocol }}
@@ -44,6 +44,23 @@
                         {{ item.balance }} {{ item.ticker }}
                     </div>
                 </div>
+                <div class="w-full flex justify-around items-end gap-2 md:gap-3 xl:gap-4 mb-4 text-sm lg:text-base">
+                    <button @click="comingSoon" class="bg-slate-600 text-white hover:bg-slate-700 flex justify-center gap-2 rounded py-1.5 px-4 items-center flex-grow">
+                        List
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 hidden sm:inline">
+                            <path d="M10.75 10.818v2.614A3.13 3.13 0 0 0 11.888 13c.482-.315.612-.648.612-.875 0-.227-.13-.56-.612-.875a3.13 3.13 0 0 0-1.138-.432ZM8.33 8.62c.053.055.115.11.184.164.208.16.46.284.736.363V6.603a2.45 2.45 0 0 0-.35.13c-.14.065-.27.143-.386.233-.377.292-.514.627-.514.909 0 .184.058.39.202.592.037.051.08.102.128.152Z" />
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-6a.75.75 0 0 1 .75.75v.316a3.78 3.78 0 0 1 1.653.713c.426.33.744.74.925 1.2a.75.75 0 0 1-1.395.55 1.35 1.35 0 0 0-.447-.563 2.187 2.187 0 0 0-.736-.363V9.3c.698.093 1.383.32 1.959.696.787.514 1.29 1.27 1.29 2.13 0 .86-.504 1.616-1.29 2.13-.576.377-1.261.603-1.96.696v.299a.75.75 0 1 1-1.5 0v-.3c-.697-.092-1.382-.318-1.958-.695-.482-.315-.857-.717-1.078-1.188a.75.75 0 1 1 1.359-.636c.08.173.245.376.54.569.313.205.706.353 1.138.432v-2.748a3.782 3.782 0 0 1-1.653-.713C6.9 9.433 6.5 8.681 6.5 7.875c0-.805.4-1.558 1.097-2.096a3.78 3.78 0 0 1 1.653-.713V4.75A.75.75 0 0 1 10 4Z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <button @click="openSendDialog(item)" title="Send" class="bg-blue-500 text-white hover:bg-blue-600 flex justify-center gap-2 rounded py-1.5 px-4 items-center">
+                        <span class="hidden lg:inline">
+                            Send
+                        </span>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                            <path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.155.75.75 0 0 0 0-1.114A28.897 28.897 0 0 0 3.105 2.288Z" />
+                        </svg>
+                    </button>
+                </div>
             </article>
         </div>
         <div v-if="totalPages > 1" class="flex justify-center gap-2 w-full items-center max-w-[300px] mx-auto overflow-clip">
@@ -51,6 +68,24 @@
                 {{ p }}
             </button>
         </div>
+        <dialog ref="sendDialog" class="p-5 rounded-lg shadow-md bg-white max-w-full w-[400px]">
+            <div class="w-full text-end">
+                <button @click="() => sendDialog.close()" class="p-2 rounded-full -m-4 hover:bg-gray-100 text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                        <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div>
+                    Send:
+                </div>
+                <div>
+
+                </div>
+            </div>
+        </dialog>
+    </div>
+    <div>
+
     </div>
 </template>
 
@@ -58,66 +93,8 @@
 import { inject, ref, watchEffect, computed } from 'vue'
 import api from '../util/api'
 import BigNumber from 'bignumber.js'
+import { toast } from 'vue3-toastify'
 const TRUSTED = ['tezmaps', 'tzrc-20:tezi']
-
-const mock = {
-    "page": 1,
-    "perPage": 5,
-    "totalItems": 18,
-    "totalPages": 4,
-    "items": [
-        {
-            "balance": 1,
-            "c": "2306.tezmap",
-            "collectionId": "balance_view",
-            "collectionName": "balance_view",
-            "holder": "tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV",
-            "id": "2eqokuboqp",
-            "p": "tezmaps",
-            "total_supply": "1"
-        },
-        {
-            "balance": 1,
-            "c": "2285.tezmap",
-            "collectionId": "balance_view",
-            "collectionName": "balance_view",
-            "holder": "tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV",
-            "id": "2eqp96u22p",
-            "p": "bezmaps",
-            "total_supply": "1"
-        },
-        {
-            "balance": 1,
-            "c": "99992175.tezmap",
-            "collectionId": "balance_view",
-            "collectionName": "balance_view",
-            "holder": "tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV",
-            "id": "2eqpcg7abl",
-            "p": "tezmaps",
-            "total_supply": "1"
-        },
-        {
-            "balance": 1,
-            "c": "2266.tezmap",
-            "collectionId": "balance_view",
-            "collectionName": "balance_view",
-            "holder": "tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV",
-            "id": "2es5tyrpj5",
-            "p": "gezmaps",
-            "total_supply": "1"
-        },
-        {
-            "balance": 100000000,
-            "c": "02",
-            "collectionId": "balance_view",
-            "collectionName": "balance_view",
-            "holder": "tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV",
-            "id": "2es7213q4h",
-            "p": "tzrc-20:tezius",
-            "total_supply": "1000000000000"
-        }
-    ]
-}
 
 const account = inject('walletConnection')
 const BALANCE_VIEW = 'balance_view'
@@ -140,10 +117,23 @@ const paging = computed(() => {
     return res
 })
 
+const sendDialog = ref(null)
+
+const selection = ref(null)
+
 const goToPage = (n) => {
     page.value = n
 
     loadData()
+}
+
+const comingSoon = () => {
+    toast.warn("Work in progress: feature is coming soon...")
+}
+
+const openSendDialog = (sel) => {
+    selection.value = sel
+    sendDialog.value.showModal()
 }
 
 const loadData = async () => {

@@ -1,6 +1,6 @@
 <template>
     <div class="mx-auto w-full text-center p-0">
-        <BlockMap :width="width" :height="height/2" :offset="offset" :limit="5000" :row-width="100" @selected="showPopup">
+        <BlockMap :width="width" :height="height/2" :offset="offset" :limit="5000" :row-width="100" @selected="showPopup" class="mx-4">
         </BlockMap>
         <div class="w-full px-5">
             <h2 class="text-center py-6 text-xl font-mono font-semibold">Tezmaps {{ firstBlock }} &ndash; {{ firstBlock + 4999 }}</h2>
