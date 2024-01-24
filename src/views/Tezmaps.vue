@@ -4,7 +4,7 @@
         </BlockMap>
         <div class="w-full px-5">
             <h2 class="text-center py-6 text-xl font-mono font-semibold">Tezmaps {{ firstBlock }} &ndash; {{ firstBlock + 4999 }}</h2>
-            <input v-model.number="firstBlock" type="range" :min="0" :max="5000000" :step="5000" @change="(e) => {offset = +e.target.value}" @input="(e) => console.log(e.target.value, offset)" class="w-full">
+            <input v-model.number="firstBlock" type="range" :min="0" :max="lastBlock" :step="5000" @change="(e) => {offset = +e.target.value}" @input="(e) => console.log(e.target.value, offset)" class="w-full">
         </div>
     </div>
     <div class="fixed w-full h-0 bottom-0 z-50">
@@ -30,7 +30,7 @@
 
 <script setup>
 import { useWindowSize } from '@vueuse/core'
-import { ref, computed, inject } from 'vue'
+import { ref, computed, inject, onMounted } from 'vue'
 import { toast } from 'vue3-toastify'
 import BlockMap from '../components/BlockMap.vue'
 
@@ -40,6 +40,7 @@ const KT = import.meta.env.VITE_TICKETER
 
 const offset = ref(0)
 const firstBlock = ref(0)
+const lastBlock = ref(5000000)
 
 const minting = ref(false)
 const operation = ref('')
@@ -51,6 +52,12 @@ const contractAt = inject('contract')
 const isConnected = computed(() => !!account.address)
 
 const selection = ref([])
+
+const readLastBlock = async () => {
+    const response = await fetch("https://api.tzkt.io/v1/blocks/count");
+    const block = await response.json()
+    lastBlock.value = Number(block || 5000000)
+}
 
 const claimTezmap = async ([id, claimed]) => {
     try {
@@ -70,7 +77,7 @@ const claimTezmap = async ([id, claimed]) => {
 
         console.log(contract)
 
-        const op = await contract.methodsObject.claim({ claim: bytes, protocol: 'tezmaps' }).send()
+        const op = await contract.methodsObject.claim({ claim: bytes, protocol: 'tezmap' }).send()
 
         operation.value = 'Waiting for blockchain confirmation...'
 
@@ -93,5 +100,7 @@ const claimTezmap = async ([id, claimed]) => {
 const showPopup = (level) => {
     selection.value = level
 }
-
+onMounted(() => {
+    readLastBlock()
+})
 </script>

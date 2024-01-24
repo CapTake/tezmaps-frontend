@@ -5,9 +5,7 @@
 <script setup>
 import { BeaconWallet } from '@taquito/beacon-wallet'
 import { MichelCodecPacker, TezosToolkit } from '@taquito/taquito'
-// import { TzktExtension } from '@tzkt/ext-taquito'
-// import { Tzip12Module } from '@taquito/tzip12'
-// import { Tzip16Module } from '@taquito/tzip16'
+import { LocalForger } from '@taquito/local-forging'
 import { reactive, onBeforeMount, provide } from 'vue'
 import { useDark } from '@vueuse/core'
 
@@ -18,9 +16,9 @@ const props = defineProps({
 })
 
 const Tezos = new TezosToolkit(props.rpcUrl)
-// Tezos.addExtension(new TzktExtension({ url: import.meta.env.VITE_TZKT_API_URL }))
-// Tezos.addExtension(new Tzip12Module())
-// Tezos.addExtension(new Tzip16Module())
+
+const forger = new LocalForger()
+
 Tezos.setPackerProvider(new MichelCodecPacker())
 
 const isDark = useDark()
@@ -96,6 +94,30 @@ const connection = reactive({
 provide('originate', async ({ code, storage, init }) => Tezos.wallet.originate({ code, storage, init }).send())
 
 provide('contract', async (address) => Tezos.wallet.at(address))
+
+provide('transferTicket', async (params) => {
+    const prepared = await Tezos.prepare.transferTicket(params)
+
+    const forgeParams = Tezos.prepare.toForge(prepared)
+
+    const forgedBytes = await forger.forge(forgeParams)
+
+    console.log(forgedBytes)
+
+    // sign the transaction operation
+    // const signedBytes = await wallet.sign(forgedBytes);
+
+    // console.log(signedBytes)
+
+    throw new Error('Not supported yet.')
+    // // get the operation hash using the encodeOpHash() function
+    // const opHash = encodeOpHash(signedBytes.sbytes, new Uint8Array([3]));
+    // console.log(opHash)
+    // const op = await Tezos.rpc.injectOperation(signedBytes.sbytes);
+
+    // return op
+    //    Tezos.contract.transferTicket(params)
+})
 
 provide('walletConnection', connection)
 

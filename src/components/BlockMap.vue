@@ -338,7 +338,7 @@ const init = () => {
 
     stage.on('dragmove', onDragMove)
 
-    layer.on('click', function (evt) {
+    layer.on('click touchend', function (evt) {
         const {target} = evt
         if (target instanceof Konva.Rect) {
            // const level = blocks.value.find(([id]) => Number(target.name()) === id)

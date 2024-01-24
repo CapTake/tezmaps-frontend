@@ -9,18 +9,23 @@
                 </svg>
             </div>
         </div>
-        <div v-else-if="items.length === 0" class="text-center py-40 w-full text-slate-400">
-            There is nothing here yet :(
+        <div v-else-if="items.length === 0" class="flex flex-col items-center h-[50vh] justify-center py-40 w-full text-slate-400">
+            <div class="text-center mb-10">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" />
+                </svg>
+            </div>
+            There is nothing here yet.
         </div>
         <div v-else class="w-full grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 xl:gap-3 mb-8">
             <article v-for="item in items" :key="item.id" class="border border-slate-50 rounded-lg shadow hover:shadow-lg px-3 md:px-5 bg-white relative font-mono tracking-tight">
-                <div class="py-2 text-xs text-slate-500 flex justify-between items-center uppercase">
+                <div class="py-2 text-xs text-slate-500 flex justify-between items-center uppercase" :class="{'line-through decoration-red-500': item.deprecated}">
                     {{ item.protocol }}
-                    <svg v-if="item.trusted" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-slate-300">
+                    <svg v-if="item.trusted" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-green-300">
                         <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
                     </svg>
                 </div>
-                <div v-if="item.protocol === 'tezmaps'" class="w-full flex justify-center items-end gap-1 mb-6 mt-4">
+                <div v-if="item.protocol === 'tezmap'" class="w-full flex justify-center items-end gap-1 mb-6 mt-4">
                     <div>
                         {{ item.content }}
                     </div>
@@ -52,7 +57,7 @@
                             <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-6a.75.75 0 0 1 .75.75v.316a3.78 3.78 0 0 1 1.653.713c.426.33.744.74.925 1.2a.75.75 0 0 1-1.395.55 1.35 1.35 0 0 0-.447-.563 2.187 2.187 0 0 0-.736-.363V9.3c.698.093 1.383.32 1.959.696.787.514 1.29 1.27 1.29 2.13 0 .86-.504 1.616-1.29 2.13-.576.377-1.261.603-1.96.696v.299a.75.75 0 1 1-1.5 0v-.3c-.697-.092-1.382-.318-1.958-.695-.482-.315-.857-.717-1.078-1.188a.75.75 0 1 1 1.359-.636c.08.173.245.376.54.569.313.205.706.353 1.138.432v-2.748a3.782 3.782 0 0 1-1.653-.713C6.9 9.433 6.5 8.681 6.5 7.875c0-.805.4-1.558 1.097-2.096a3.78 3.78 0 0 1 1.653-.713V4.75A.75.75 0 0 1 10 4Z" clip-rule="evenodd" />
                         </svg>
                     </button>
-                    <button @click="openSendDialog(item)" title="Send" class="bg-blue-500 text-white hover:bg-blue-600 flex justify-center gap-2 rounded py-1.5 px-4 items-center">
+                    <button @click="() => openSendDialog(item)" title="Send" class="bg-blue-500 text-white hover:bg-blue-600 flex justify-center gap-2 rounded py-1.5 px-4 items-center">
                         <span class="hidden lg:inline">
                             Send
                         </span>
@@ -69,37 +74,55 @@
             </button>
         </div>
         <dialog ref="sendDialog" class="p-5 rounded-lg shadow-md bg-white max-w-full w-[400px]">
-            <div class="w-full text-end">
+            <h3 class="w-full flex justify-between items-center mb-4 text-xl">
+                <span>Sending</span>
                 <button @click="() => sendDialog.close()" class="p-2 rounded-full -m-4 hover:bg-gray-100 text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
                         <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                     </svg>
                 </button>
-                <div>
-                    Send:
-                </div>
-                <div>
-
-                </div>
+            </h3>
+            <div v-if="selection" class="my-6 text-center font-mono">
+                {{ selection.content }}
+            </div>
+            <label class="my-6 text-center flex gap-2 justify-between items-center border  p-2 rounded whitespace-nowrap" :class="{'border-slate-300': !destError, 'border-red-400': destError}">
+                <span class="flex-shrink">To:</span>
+                <input type="text" v-model.trim="destAddress" class="flex-grow outline-none" placeholder="tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV" novalidate @focus="destError = false" /> 
+            </label>
+            <div class="flex justify-between items-center">
+                <button @click="() => sendDialog.close()" class="px-5 py-1.5 hover:bg-slate-200 rounded  bg-slate-100 text-slate-600">
+                    Cancel
+                </button>
+                <button @click="sendTicket" class="px-5 py-1.5 hover:bg-blue-600 rounded bg-blue-500 text-white">
+                    Send
+                </button>
             </div>
         </dialog>
-    </div>
-    <div>
-
     </div>
 </template>
 
 <script setup>
 import { inject, ref, watchEffect, computed } from 'vue'
 import api from '../util/api'
+import { ticketParams } from '../util/ticket'
 import BigNumber from 'bignumber.js'
 import { toast } from 'vue3-toastify'
-const TRUSTED = ['tezmaps', 'tzrc-20:tezi']
+import { validateAddress, char2Bytes, bytes2Char } from '@taquito/utils'
+// import { TicketTokenParams } from '@taquito/rpc'
+
+const TRUSTED = ['tezmap', 'tzrc-20:tezi']
+const DEPRECATED = ['tezmaps']
+
+const TICKETER = import.meta.env.VITE_TICKETER
+const PROXY = import.meta.env.VITE_PROXY_CONTRACT
 
 const account = inject('walletConnection')
 const BALANCE_VIEW = 'balance_view'
 
 const loading = ref(false)
+
+const sending = ref(false)
+
 const items = ref([])
 const page = ref(1)
 const perPage = ref(24)
@@ -116,14 +139,16 @@ const paging = computed(() => {
     res.push(last)
     return res
 })
-
+const destAddress = ref(null)
+const destError = ref(false)
 const sendDialog = ref(null)
 
 const selection = ref(null)
+const sendAmount = ref(1)
 
 const goToPage = (n) => {
     page.value = n
-
+    lastBlock()
     loadData()
 }
 
@@ -132,8 +157,78 @@ const comingSoon = () => {
 }
 
 const openSendDialog = (sel) => {
-    selection.value = sel
+    const { protocol, content } = sel
+    selection.value = { protocol, content, balance: 1 }
     sendDialog.value.showModal()
+}
+
+const contractAt = inject('contract')
+const transferTicket = inject('transferTicket')
+
+const sendTicket = async () => {
+    try {
+        /// So. Taquito doesn't let you use wallet to send tickets right now.
+        /// Temporary solution is to make as smart contract which accepts ticket and recipient address and immediately
+        /// transfers ticket to the recipient. Thus we could use wallet.at(contract) to send tickets.
+        if (sending.value || !selection.value) return
+        sending.value = true
+
+        const { protocol, content } = selection.value
+
+        if (protocol !== 'tezmap') {
+            throw new Error('Only Tezmaps sending supported so far.')
+        }
+
+        const destination = destAddress.value
+        const amount = sendAmount.value
+
+        if (validateAddress(destination) !== 3) {
+            destError.value = true
+            return
+        }
+
+        if (!account.address) {
+            throw new Error('Connect wallet first!')
+        }
+
+        const params = ticketParams(destination, protocol, char2Bytes(content), amount, TICKETER)
+
+        sendDialog.value.close()
+        
+        throw new Error('Not supported yet')
+        // const ticketer = await contractAt(TICKETER)
+
+        // const op = await transferTicket(params)
+        const ticket = { ticketer: TICKETER, value: { 0: protocol, 1: char2Bytes(content) }, amount: 1 }
+        const proxy = await contractAt(PROXY)
+
+        console.log(proxy.methodsObject.default().getSignature())
+
+        const op = proxy.methodsObject.default({ ticket, to_: destination }).send()
+
+        // const op = await proxy.methods.default(
+        //     {
+        //         ticketer: TICKETER,
+        //         value: { 0: protocol, 1: char2Bytes(content) },
+        //         amount: new BigNumber(1)
+        //     },
+        //     destination
+        // ).send()
+
+        /*
+        {"val":{"prim":"pair","args":[{"prim":"ticket","args":[{"prim":"pair","args":[{"prim":"string"},{"prim":"bytes"}]}],"annots":["%ticket"]},{"prim":"address","annots":["%to_"]}]},"idx":0}
+        */
+
+        await op.confirmation(1)
+        toast.success(`Succseefully sent ${content}`, { autoClose: 3000, theme: 'colored', position: 'top-center' })
+
+    } catch (e) {
+        console.log(e)
+        const message = e.description || e.message
+        toast.error(message, { autoClose: 3000, theme: 'colored', position: 'top-center' })
+    } finally {
+        sending.value = false
+    }
 }
 
 const loadData = async () => {
@@ -153,12 +248,15 @@ const loadData = async () => {
                 decimals = parseInt(c, 16)
                 b = b.dividedBy(new BigNumber(10).pow(decimals))
                 content = ''
+            } else if(protocol === 'tezmap') {
+                content = bytes2Char(content)
             }
 
             return {
                 id,
                 protocol,
                 trusted: TRUSTED.includes(p),
+                deprecated: DEPRECATED.includes(p),
                 ticker,
                 content,
                 balance: b.toFormat(),
