@@ -68,7 +68,7 @@
                 </div>
             </article>
         </div>
-        <div v-if="totalPages > 1" class="flex justify-center gap-2 w-full items-center max-w-[300px] mx-auto overflow-clip">
+        <div v-if="totalPages > 1" class="flex justify-center gap-2 w-full items-center max-w-[300px] mx-auto overflow-clip mt-8">
             <button @click="goToPage(p)" v-for="p in paging" :key="p" class="px-3 py-1.5 hover:bg-slate-200 rounded" :class="{'bg-slate-200': p === page}">
                 {{ p }}
             </button>
@@ -131,13 +131,22 @@ const filter = computed(() => `holder = "${account.address || ''}"`)
 const paging = computed(() => {
     const current = page.value
     const last = totalPages.value
-    const res = [1]
-    for (let p = current - 3; p <= current + 3; p++) {
-        if (p > 0 && p < last && !res.includes(p)) res.push(p)
+    let res  = current > 1 && current < last ? [current] : []
+    const len = 3
+    for (let i = 1; i <= len; i++) {
+        let p = current - i
+        if (p > 1 && p < last && res.length < len) {
+            res = [p, ...res]
+        }
+        p = current + i
+        if (p > 1 && p < last && res.length < len) {
+            res = [...res, p]
+        }
     }
-
-    res.push(last)
-    return res
+    if (last > 1) {
+        res.push(last)
+    }
+    return [1, ...res]
 })
 const destAddress = ref(null)
 const destError = ref(false)
@@ -235,7 +244,7 @@ const loadData = async () => {
     try {
         loading.value = true
         const { page: p, perPage: pp, totalPages: tp, items: res } = await api.collection(BALANCE_VIEW)
-            .getList(page.value, perPage.value, { filter: filter.value })
+            .getList(page.value, perPage.value, { filter: filter.value, sort: '-updated' })
         page.value = p
         perPage.value = pp
         totalPages.value = tp
