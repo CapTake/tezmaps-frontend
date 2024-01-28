@@ -235,7 +235,7 @@ const loadData = async () => {
     try {
         loading.value = true
         const { page: p, perPage: pp, totalPages: tp, items: res } = await api.collection(BALANCE_VIEW)
-            .getList(page.value, perPage.value, { filter: filter.value })
+            .getList(page.value, perPage.value, { filter: filter.value, sort: '-updated' })
         page.value = p
         perPage.value = pp
         totalPages.value = tp
