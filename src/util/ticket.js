@@ -1,18 +1,18 @@
 export const ticketParams = (destination, protocol, content, ticketAmount, ticketTicketer, entrypoint = 'default') => {
     return {
         ticketTy: {
-            prim: "pair",
+            prim: 'pair',
             args: [
                 {
-                    prim: "string"
+                    prim: 'string'
                 },
                 {
-                    prim: "bytes"
+                    prim: 'bytes'
                 }
             ]
         },
         ticketContents: {
-            prim: "Pair",
+            prim: 'Pair',
             args: [
                 {
                     string: protocol
