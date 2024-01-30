@@ -1,4 +1,6 @@
 import PocketBase from 'pocketbase';
 
-export default new PocketBase(import.meta.env.VITE_BACKEND_API);
+const api = new PocketBase(import.meta.env.VITE_BACKEND_API)
+
+export default api;
 

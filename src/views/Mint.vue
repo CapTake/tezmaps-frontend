@@ -1,6 +1,6 @@
 <template>
     <div class="mx-auto w-full max-w-6xl py-12 text-center px-4">
-        <h1 class="text-5xl mb-8 tracking-wider">{{ TICK }}</h1>
+        <h1 class="text-5xl mb-8 tracking-wider">{{ TICK.toUpperCase() }}</h1>
         <p class="md:text-lg mb-12 text-slate-800">Tezos inscriptions tzrc-20 token experiment.</p>
         <h2 class="text-2xl mb-10">Total supply: {{ SUPPLY.toLocaleString() }}</h2>
         <div class="flex justify-center gap-1 items-center px-1 mb-8">
@@ -8,54 +8,61 @@
             <span>{{ percentMinted }}%</span>
         </div>
         <p class="text-sm h-10 text-slate-600">{{ operation }}</p>
-        <button v-if="isConnected" @click="mint" class="transition-all rounded bg-[#2196f3]  text-white px-4 py-2  hover:bg-black">Inscribe {{ LIMIT.toLocaleString() }} <span class="">{{ TICK }}</span></button>
-        <button v-else @click="connect" class="transition-all rounded hover:bg-[#2196f3]  text-white px-4 py-2  bg-black">Connet wallet</button>
+        <button @click="mint" class="transition-all rounded bg-[#2196f3]  text-white px-4 py-2  hover:bg-black">Airdrop concluded</button>
     </div>
 </template>
 
 <script setup>
-import { ref, computed, inject, toRaw } from 'vue'
-import { char2Bytes } from '@taquito/utils'
-import code from '../data/code'
+import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue'
 import { toast } from 'vue3-toastify'
+import { prepareOperation } from '../util/tzrc-20'
+import BigNumber from 'bignumber.js'
+import api from '../util/api'
 
-const TICK = 'TEZI'
-const LIMIT = 2000
+const KT = import.meta.env.VITE_TICKETER
+const PROTOCOL = 'tzrc-20'
+const TICK = 'tezi'
+const LIMIT = 1000
 const SUPPLY = 21_000_000
 
 const minted = ref(7000000)
 const minting = ref(false)
 const operation = ref('')
+const recordId = ref(null)
 
 const account = inject('walletConnection')
+const contractAt = inject('contract')
 const connect = inject('connectWallet')
-const originate = inject('originate')
 
 const percentMinted = computed(() => (minted.value / SUPPLY * 100).toFixed(2))
 const isConnected = computed(() => !!account.address)
 
-const inscribe = async (data, mediaType = '') => {
+const inscribe = async (protocol, claim) => {
     try {
         if (minting.value) return
 
         minting.value = true
 
-        const inscription = char2Bytes(`data:${mediaType},${JSON.stringify(data)}`)
+        if (!isConnected.value) throw new Error('Connect wallet first')
 
-        const { address } = account
+        operation.value = 'Preparing transaction...'
 
-        operation.value = 'Signing & Originating inscription...'
-        const mintOp = await originate({ code, storage: [inscription, address] })
+        const contract = await contractAt(KT)
 
-        console.log(mintOp.opHash)
+        console.log(contract)
+
+        const op = await contract.methodsObject.claim({ claim, protocol }).send()
+
         operation.value = 'Waiting for blockchain confirmation...'
-        await mintOp.contract(1, 60000)
-        toast.success(`Successfully minted ${LIMIT} ${TICK}`, { autoClose: 3000, theme: 'colored' })
+
+        await op.confirmation(1)
+
+        toast.success(`Transaction confirmed`, { autoClose: 3000, theme: 'colored', position: 'top-center' })
 
     } catch (e) {
         console.log(e)
-        const message = e.description || e.message
-        toast.error(message, { autoClose: 3000, theme: 'colored' })
+        const message = e.data?.[1]?.with?.string || e.description || e.message
+        toast.error(message, { autoClose: 3000, theme: 'colored', position: 'top-center' })
     } finally {
         minting.value = false
         operation.value = ''
@@ -63,24 +70,45 @@ const inscribe = async (data, mediaType = '') => {
 }
 
 const mint = async () => {
-    await inscribe({
-        p: 'tzrc-20',
-        op: 'mint',
-        tick: TICK.toLowerCase(),
-        amt: LIMIT.toString(),
-    })
+    // const { bytes } = prepareOperation({ op: 'mint', tick: 'tezi', amt: LIMIT })
+    // console.log(bytes)
+    // await inscribe(PROTOCOL, bytes)
 }
 
 const deployToken = async () => {
-    await inscribe({
-        p: 'tzrc-20',
-        op: 'deloy',
-        tick: TICK.toLowerCase(),
-        max: SUPPLY.toString(),
-        lim: LIMIT.toString(),
-    })
+    const { bytes } = prepareOperation({ op: 'deploy', tick: 'tezi', max: SUPPLY, lim: LIMIT, cd: 1, nbf: 1706537046, dec: 6 })
+    console.log(bytes)
+    await inscribe(PROTOCOL, bytes)
 }
 
+const load = async () => {
+    try {
+        const subscribe = !recordId.value
+        const { id, total_supply } = await api.collection('protocol_tickets').getFirstListItem('p="tzrc-20:tezi"')
+        recordId.value = id
+        minted.value = new BigNumber(total_supply).dividedBy(new BigNumber(1_000_000)).toNumber()
+        if (subscribe) {
+            console.log('subscription')
+            await api.collection('protocol_tickets').subscribe(id, (message) => {
+                const { record: { total_supply } } = message
+                console.log(message, total_supply)
+                minted.value = new BigNumber(total_supply).dividedBy(new BigNumber(1_000_000)).toNumber()
+            }).catch(e => {
+                console.log(e)
+            })
+        }
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+onMounted(async () => {
+    load()
+})
+
+onBeforeUnmount(() => {
+    api.collection('protocol_tickets').unsubscribe()
+})
 </script>
 
 <style scoped>

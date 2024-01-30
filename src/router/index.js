@@ -9,7 +9,7 @@ const routes = [
   { path: '/docs', component: ComingSoon, meta: { title: 'Docs' } },
   { path: '/balance', component: Balances, meta: { title: 'Balance', authenticated: true } },
   { path: '/trade', component: ComingSoon, meta: { title: 'Marketplace' } },
-  { path: '/mint', component: Mint, meta: { title: 'Mint' } },
+  { path: '/airdrop', component: Mint, meta: { title: 'Tezi Airdrop' } },
   { path: '/create', component: ComingSoon, meta: { title: 'Create inscription'}}
 ]
 const router = createRouter({
