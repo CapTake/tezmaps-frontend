@@ -1,14 +1,14 @@
 <template>
     <div class="mx-auto w-full max-w-6xl py-12 text-center px-4">
-        <h1 class="text-5xl mb-8 tracking-wider">{{ TICK.toUpperCase() }}</h1>
-        <p class="md:text-lg mb-12 text-slate-800">Tezos inscriptions tzrc-20 token experiment.</p>
+        <h1 class="text-5xl font-light mb-8 tracking-wider">{{ TICK.toUpperCase() }}</h1>
+        <p class="md:text-lg mb-12 text-slate-500">Tezos inscriptions tzrc-20 token experiment</p>
         <h2 class="text-2xl mb-10">Total supply: {{ SUPPLY.toLocaleString() }}</h2>
         <div class="flex justify-center gap-1 items-center px-1 mb-8">
-            <progress max="100" :value="percentMinted" class="max-w-full h-8 rounded-sm w-[500px] transition-all"></progress>
+            <progress max="100" :value="percentMinted" class="max-w-full h-8 bg-darkblue text-main rounded-sm w-[500px] transition-all"></progress>
             <span>{{ percentMinted }}%</span>
         </div>
-        <p class="text-sm h-10 text-slate-600">{{ operation }}</p>
-        <button @click="mint" class="transition-all rounded bg-[#2196f3]  text-white px-4 py-2  hover:bg-black">Airdrop concluded</button>
+        <p class="text-sm h-10 text-slate-500">{{ operation }}</p>
+        <button @click="mint" class="transition-all rounded bg-[#2196f3] text-light bg-main border-white font-light px-4 py-2 hover:bg-black bg-gradient-to-r from-lightblue to-darkblue">Airdrop concluded</button>
     </div>
 </template>
 
@@ -70,13 +70,13 @@ const inscribe = async (protocol, claim) => {
 }
 
 const mint = async () => {
-    // const { bytes } = prepareOperation({ op: 'mint', tick: 'tezi', amt: LIMIT })
-    // console.log(bytes)
+        const { bytes } = prepareOperation({ op: 'mint', tick: 'tezi', amt: LIMIT })
+        console.log(bytes)
     // await inscribe(PROTOCOL, bytes)
 }
 
 const deployToken = async () => {
-    const { bytes } = prepareOperation({ op: 'deploy', tick: 'tezi', max: SUPPLY, lim: LIMIT, cd: 1, nbf: 1706537046, dec: 6 })
+    const { bytes } = prepareOperation({ op: 'deploy', tick: 'tezi', max: SUPPLY, lim: LIMIT, cd: 10, nbf: 0, dec: 6 }) //exp for ending timestamp
     console.log(bytes)
     await inscribe(PROTOCOL, bytes)
 }
@@ -113,7 +113,7 @@ onBeforeUnmount(() => {
 
 <style scoped>
 progress[value] {
-  --pb-color: #2196f3; /* the progress color */
+  --pb-color: #2F59ED; /* the progress color */
   --pb-background: lightgrey; /* the background color */
 
   -webkit-appearance: none;
