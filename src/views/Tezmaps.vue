@@ -3,8 +3,9 @@
         <BlockMap :width="width" :height="height/2" :offset="offset" :limit="5000" :row-width="100" @selected="showPopup" class="mx-4">
         </BlockMap>
         <div class="w-full px-5">
-            <h2 class="text-center py-6 text-xl font-semibold">Tezmaps {{ firstBlock }} &ndash; {{ firstBlock + 4999 }}</h2>
+            <h2 class="text-center py-6 text-xl font-semibold">Tezmaps {{ firstBlock }} &ndash; {{ firstBlock + 4999 }} </h2>
             <input v-model.number="firstBlock" type="range" :min="0" :max="lastBlock" :step="5000" @change="(e) => {offset = +e.target.value}" @input="(e) => console.log(e.target.value, offset)" class="w-full accent-slate-400">
+            <input type="number" class="text-black w-[100px] text-xs rounded-xl bg-slate-300" style="opacity:1!Important;" :step="5000" :min="0" :max="lastBlock" v-model.number="firstBlock" @change="(e) => {offset = +e.target.value}" @input="(e) => console.log(e.target.value, offset)"><span class="text-xs text-slate-500"> (5000 Steps)</span>
         </div>
     </div>
     <div class="fixed w-full h-0 bottom-0 z-50">
@@ -105,3 +106,12 @@ onMounted(() => {
     readLastBlock()
 })
 </script>
+
+<style scoped>
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button {  
+
+   opacity: 1;
+
+}
+</style>

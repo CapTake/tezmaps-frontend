@@ -18,6 +18,10 @@ export default {
           'darkgrey': '#131313',
           'dark': '#000000',
           'light': '#DEDEDE',
+          'gradient2': '#9F329F',
+          'gradient1': '#0F61FF',
+
+
       },
       fontFamily: {
         'sans': ['"Inter"', ...defaultTheme.fontFamily.sans],

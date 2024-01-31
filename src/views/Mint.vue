@@ -8,7 +8,7 @@
             <span>{{ percentMinted }}%</span>
         </div>
         <p class="text-sm h-10 text-slate-500">{{ operation }}</p>
-        <button @click="mint" class="transition-all rounded bg-[#2196f3] text-light bg-main border-white font-light px-4 py-2 hover:bg-black bg-gradient-to-r from-lightblue to-darkblue">Airdrop concluded</button>
+        <button @click="mint" :class="BTN">Airdrop concluded</button>
     </div>
 </template>
 
@@ -19,6 +19,7 @@ import { prepareOperation } from '../util/tzrc-20'
 import BigNumber from 'bignumber.js'
 import api from '../util/api'
 
+const BTN = import.meta.env.VITE_BTN_CLASS
 const KT = import.meta.env.VITE_TICKETER
 const PROTOCOL = 'tzrc-20'
 const TICK = 'tezi'

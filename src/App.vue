@@ -16,4 +16,5 @@ import TopNav from './components/TopNav.vue';
 const RPC = import.meta.env.VITE_TEZOS_RPC_URL
 const NETWORK = import.meta.env.VITE_TEZOS_NETWORK
 const DAPP_NAME = import.meta.env.VITE_DAPP_NAME
+
 </script>

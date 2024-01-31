@@ -93,7 +93,7 @@
                 <button @click="() => sendDialog.close()" class="px-5 py-1.5 hover:bg-slate-200 rounded  bg-slate-100 text-slate-600">
                     Cancel
                 </button>
-                <button @click="sendTicket" class="px-5 py-1.5 hover:bg-blue-600 rounded bg-blue-500 text-white">
+                <button @click="sendTicket" :class="BTN">
                     Send
                 </button>
             </div>
@@ -113,6 +113,7 @@ import { validateAddress, char2Bytes, bytes2Char } from '@taquito/utils'
 const TRUSTED = ['tezmap', 'tzrc-20:tezi']
 const DEPRECATED = ['tezmaps']
 
+const BTN = import.meta.env.VITE_BTN_CLASS
 const TICKETER = import.meta.env.VITE_TICKETER
 const PROXY = import.meta.env.VITE_PROXY_CONTRACT
 

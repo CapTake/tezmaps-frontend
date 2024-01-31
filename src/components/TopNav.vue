@@ -15,7 +15,7 @@
             <router-link to="/trade" class="transition-all hover:text-blue-500">Market</router-link>
             <router-link to="/docs" class="transition-all hover:text-blue-500">Docs</router-link>
         </div>
-        <SyncButton class="text-sm transition-all rounded border border-none bg-main bg-gradient-to-r text-light from-lightblue to-darkblue hover:to-lightblue px-4 py-1.5" />
+        <SyncButton :class="BTN" class="mb-0 mt-2"/>
         <button @click="menu = !menu" class="rounded-full text-slate-600 hover:text-[#2196f3] flex md:hidden">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
                 <path fill-rule="evenodd" d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
@@ -28,6 +28,8 @@
 import Logo from './Logo.vue'
 import SyncButton from './SyncButton.vue'
 import { inject, ref, computed } from 'vue'
+const BTN = import.meta.env.VITE_BTN_CLASS
+
 const menu = ref(false)
 const account = inject('walletConnection')
 const isConnected = computed(() => !!account?.address)
