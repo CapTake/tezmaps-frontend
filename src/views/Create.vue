@@ -143,9 +143,16 @@ const startDate = ref('')
 const endDate = ref('')
 
 const deployToken = async () => {
-    const { bytes } = prepareOperation({ op: 'deploy', tick: ticker.value, max: new BigNumber(supply.value).toFixed(), 
-    lim: new BigNumber(maxClaim.value).toFixed(), cd: new BigNumber(cooldown.value).toFixed(), 
-    nbf: startDate.value, exp: endDate.value, dec: new BigNumber(decimals.value).toFixed() }) 
+    const { bytes } = prepareOperation({ 
+        op: 'deploy', 
+        tick: ticker.value, 
+        max: new BigNumber(supply.value).toFixed(),
+        lim: new BigNumber(maxClaim.value).toFixed(),
+        cd: new BigNumber(cooldown.value).toFixed(), 
+        nbf: startDate.value, 
+        exp: endDate.value,
+        dec: new BigNumber(decimals.value).toFixed()
+    }) 
     console.log(bytes)
     await inscribe(protocol.value, bytes)
 }

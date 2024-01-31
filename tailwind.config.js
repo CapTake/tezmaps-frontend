@@ -16,7 +16,8 @@ export default {
           'darkblue': '#02143C',
           'lightgrey': '#3a3a3c',
           'darkgrey': '#131313',
-          'dark': '#000000',
+          'black': '#090909',
+          'dark': '#33333',
           'light': '#DEDEDE',
           'gradient2': '#9F329F',
           'gradient1': '#0F61FF',
@@ -24,7 +25,7 @@ export default {
 
       },
       fontFamily: {
-        'sans': ['"Inter"', ...defaultTheme.fontFamily.sans],
+        customFont: '"JetBrains Mono"',
       }
     },
 

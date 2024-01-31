@@ -1,7 +1,7 @@
 <template>
-    <nav class="font-light text-black dark:text-light">
+    <nav class="font-light font-customFont text-black dark:text-light">
         <router-link to="/" class="flex gap-1 items-center">
-            <Logo class="text-[#2196f3]" style="width:35px;"/><span class="font-inter font-normal text-black dark:text-light text-xl uppercase" style="margin-top:-2px;">Tezi Network</span>
+            <Logo style="width:35px;margin-top:-3px"/><span class="font-normal text-black dark:text-light text-2xl lowercase hover:font-bold" style="margin-top:-2px;">Tezi Network</span>
         </router-link>
         <div class="grow"></div>
         <div @click="menu = false" class="md:flex md:justify-between gap-5 md:flex-row flex-col absolute md:static bg-white dark:bg-black top-16 right-4 rounded shadow-md md:shadow-none md:p-1 p-5" :class="{hidden: !menu, flex: menu}">
