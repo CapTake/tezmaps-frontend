@@ -27,7 +27,7 @@
                     <div v-bind:class="{'hidden': openTab !== 1, 'block': openTab === 1}">
                         <p class="md:text-md text-slate-500 dark:text-slate-300 mb-6">Deploy your own TZRC-20 token</p>
                         <div class="flex justify-center">
-                            <div class="grid grid-cols-1 gap-6 text-left text-black flex justify-center ">
+                            <div class="grid grid-cols-1 gap-5 text-left text-black flex justify-center ">
                             <label class="block">
                             <span class="text-slate-500">Protocol*</span>
                             <select v-model="protocol" class="lowercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
@@ -37,10 +37,10 @@
                             </label>
                             <label class="block">
                                 <span class="text-slate-500">Token Ticker*</span>
-                                <input v-model="tokenName"
+                                <input v-model="ticker"
                                 type="text"
                                 class="lowercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="i.e. tezi"
+                                placeholder="i.e. tezi (4-6 length)"
                                 />
                             </label>
                             <label class="block">
@@ -59,12 +59,20 @@
                                 placeholder="i.e. 1000"
                                 />
                             </label>
+                            <label class="block">
+                                <span class="text-slate-500">Decimals*</span>
+                                <input v-model="decimals"
+                                type="number" min="0" max="18"
+                                class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                placeholder="0 to 18"
+                                />
+                            </label>
                             <label v-show="protocol == 'tzrc-20b'" class="block">
-                                <span class="text-slate-500">Claim Cooldown (Blocks)</span>
+                                <span class="text-slate-500">Claim Cooldown (Blocks)*</span>
                                 <input v-model="cooldown"
                                 type="number" min="1" step="1"
                                 class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="i.e. 1"
+                                placeholder="1 or higher"
                                 />
                             </label>
                             <label class="block" v-show="protocol == 'tzrc-20b'">
@@ -108,6 +116,7 @@
 import { ref, inject, computed } from 'vue'
 import { toast } from 'vue3-toastify'
 import { prepareOperation } from '../util/tzrc-20'
+import BigNumber from 'bignumber.js'
 
 const openTab = ref(1)
 
@@ -125,17 +134,20 @@ const isConnected = computed(() => !!account.address)
 
 /*Inscribe TZRC-20 */
 const protocol = ref('tzrc-20')
-const tokenName = ref('')
+const ticker = ref('')
 const supply = ref('')
 const maxClaim = ref('')
-const cooldown = ref(1)
-const startDate = ref(0)
-const endDate = ref(0)
+const cooldown = ref(0)
+const decimals = ref('')
+const startDate = ref('')
+const endDate = ref('')
 
 const deployToken = async () => {
-    const { bytes } = prepareOperation({ op: 'deploy', tick: protocol.value, max: supply.value, lim: maxClaim.value, cd: cooldown.value, nbf: startDate.value, exp: endDate.value, dec: 6 }) 
+    const { bytes } = prepareOperation({ op: 'deploy', tick: ticker.value, max: new BigNumber(supply.value).toFixed(), 
+    lim: new BigNumber(maxClaim.value).toFixed(), cd: new BigNumber(cooldown.value).toFixed(), 
+    nbf: startDate.value, exp: endDate.value, dec: new BigNumber(decimals.value).toFixed() }) 
     console.log(bytes)
-    await inscribe(protocol, bytes)
+    await inscribe(protocol.value, bytes)
 }
 
 const inscribe = async (protocol, claim) => {

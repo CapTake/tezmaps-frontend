@@ -35,7 +35,15 @@
                         {{ item.balance }} 
                     </div>
                     <div class="text-sm text-slate-500 uppercase">
-                         ${{ item.ticker }}
+                         {{ item.ticker }}
+                    </div>
+                </div>
+                <div v-else-if="item.protocol === 'tzrc-20b'" class="w-full flex justify-center items-center gap-1 mb-6 mt-4">
+                    <div>
+                        {{ item.balance }} 
+                    </div>
+                    <div class="text-sm text-slate-500 uppercase">
+                         {{ item.ticker }}
                     </div>
                 </div>
                 <div v-else class="w-full flex justify-center items-end gap-1 mb-6 mt-4 flex-wrap">
@@ -254,7 +262,7 @@ const loadData = async () => {
             let b = new BigNumber(balance)
             let decimals = 0
             let content = c
-            if(protocol === 'tzrc-20') {
+            if(protocol === 'tzrc-20' || protocol === 'tzrc-20b') {
                 decimals = parseInt(c, 16)
                 b = b.dividedBy(new BigNumber(10).pow(decimals))
                 content = ''

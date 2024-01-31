@@ -4,14 +4,17 @@ import ComingSoon from '../views/ComingSoon.vue'
 import Balances from '../views/Balances2.vue'
 import Mint from '../views/Mint.vue'
 import Create from '../views/Create.vue'
+import Tokens from '../views/Tokens.vue'
 
 const routes = [
   { path: '/', component: Home, meta: { title: 'Mint' } },
   { path: '/docs', component: ComingSoon, meta: { title: 'Docs' } },
   { path: '/balance', component: Balances, meta: { title: 'Balance', authenticated: true } },
   { path: '/trade', component: ComingSoon, meta: { title: 'Marketplace' } },
-  { path: '/mints', component: Mint, meta: { title: 'Token Mints' } },
-  { path: '/create', component: Create, meta: { title: 'Create Inscription'}}
+  { path: '/mint', component: Mint, meta: { title: 'Mint Token' } },
+  { path: '/create', component: Create, meta: { title: 'Create Inscription'}},
+  { path: '/tokens', component: Tokens, meta: { title: 'Inscriptions'}}
+
 ]
 const router = createRouter({
   history: createWebHashHistory(),
