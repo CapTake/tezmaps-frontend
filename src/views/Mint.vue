@@ -1,14 +1,14 @@
 <template>
     <div class="mx-auto w-full max-w-6xl py-12 text-center px-4">
-        <h1 class="text-5xl font-light mb-8 tracking-wider">{{ TICK.toUpperCase() }}</h1>
+        <h1 class="text-5xl font-light mb-8 tracking-wider">{{ tick.toUpperCase() }}</h1>
         <p class="md:text-lg mb-12 text-slate-500">Tezos inscriptions tzrc-20 token experiment</p>
-        <h2 class="text-2xl mb-10">Total supply: {{ SUPPLY.toLocaleString() }}</h2>
+        <h2 class="text-2xl mb-10">Total supply: {{ supply }}</h2>
         <div class="flex justify-center gap-1 items-center px-1 mb-8">
             <progress max="100" :value="percentMinted" class="max-w-full h-8 bg-darkblue text-main rounded-sm w-[500px] transition-all"></progress>
             <span>{{ percentMinted }}%</span>
         </div>
         <p class="text-sm h-10 text-slate-500">{{ operation }}</p>
-        <button @click="mint" :class="BTN">Airdrop concluded</button>
+        <button v-if="minted < SUPPLY" @click="mint" :class="BTN">Inscribe {{ LIMIT }} {{ tick.toUpperCase() }}</button><button v-else :class="BTN">Mint concluded</button>
     </div>
 </template>
 
@@ -22,7 +22,6 @@ import api from '../util/api'
 const BTN = import.meta.env.VITE_BTN_CLASS
 const KT = import.meta.env.VITE_TICKETER
 const PROTOCOL = 'tzrc-20'
-const TICK = 'tezi'
 const LIMIT = 1000
 const SUPPLY = 21_000_000
 
@@ -30,6 +29,9 @@ const minted = ref(7000000)
 const minting = ref(false)
 const operation = ref('')
 const recordId = ref(null)
+
+let tick = ref('')
+let supply = ref('')
 
 const account = inject('walletConnection')
 const contractAt = inject('contract')
@@ -71,9 +73,9 @@ const inscribe = async (protocol, claim) => {
 }
 
 const mint = async () => {
-        const { bytes } = prepareOperation({ op: 'mint', tick: 'tezi', amt: LIMIT })
+        const { bytes } = prepareOperation({ op: 'mint', tick: 'test', amt: 42069 })
         console.log(bytes)
-    // await inscribe(PROTOCOL, bytes)
+        await inscribe('tzrc-20b', bytes)
 }
 
 const deployToken = async () => {
@@ -84,10 +86,21 @@ const deployToken = async () => {
 
 const load = async () => {
     try {
+
+        const url = window.location.href
+
+        if (url.includes("?")) {
+                const [, split] = url.split('?')
+                const [rest,] = split.split('#')
+                tick = rest
+                console.log(tick)
+        }
+        
         const subscribe = !recordId.value
-        const { id, total_supply } = await api.collection('protocol_tickets').getFirstListItem('p="tzrc-20:tezi"')
+        const { id, total_supply } = await api.collection('protocol_tickets').getFirstListItem('p="tzrc-20b:test"')
         recordId.value = id
-        minted.value = new BigNumber(total_supply).dividedBy(new BigNumber(1_000_000)).toNumber()
+        supply.value = new BigNumber(total_supply)
+        minted.value = new BigNumber(total_supply).dividedBy(new BigNumber(1_000)).toNumber()
         if (subscribe) {
             console.log('subscription')
             await api.collection('protocol_tickets').subscribe(id, (message) => {
