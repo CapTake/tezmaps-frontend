@@ -31,7 +31,7 @@ const minting = ref(false)
 const operation = ref('')
 const recordId = ref(null)
 
-const supply = ref(0)
+const supply = ref(1)
 const cd = ref(0)
 const limit = ref(0)
 const decimals = ref(0)

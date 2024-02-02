@@ -22,7 +22,7 @@
                 <router-link :to="{ name: 'mint', params: { protocol: item.protocol, tick: item.ticker }}">
                 <div class="text-md flex align-middle">
                     <div class="w-[80px] pe-3">
-                        <span class="lowercase tracking-tight inline-block whitespace-nowrap rounded-[0.27rem] px-[0.65em] pb-[0.25em] pt-[0.35em] text-center align-baseline text-[0.60em] font-bold leading-none text-neutral-50 bg-lightblue">{{ item.protocol }}</span> 
+                        <span class="lowercase tracking-wider inline-block whitespace-nowrap rounded-[0.27rem] px-[0.65em] pb-[0.25em] pt-[0.35em] text-center align-baseline text-[0.60em] font-bold leading-none text-neutral-50 bg-lightblue">{{ item.protocol }}</span> 
                      </div>
                      <div class="w-[75px] align-middle inline-block pt-[3px]">
                          {{ item.ticker }} 
@@ -48,16 +48,15 @@ import { decodeBytes } from '../util/tzrc-20'
 import BigNumber from 'bignumber.js'
 import { toast } from 'vue3-toastify'
 import { validateAddress, char2Bytes, bytes2Char } from '@taquito/utils'
-// import { TicketTokenParams } from '@taquito/rpc'
 
-const TRUSTED = ['tezmap', 'tzrc-20:tezi']
+const TRUSTED = ['tezmap', 'tzrc-20:tezi', 'tzrc-20b:test',] 
 const DEPRECATED = ['tezmaps']
 
 const BTN = import.meta.env.VITE_BTN_CLASS
 
 const loading = ref(false)
 
-const supply = ref(0)
+const supply = ref(1)
 const cd = ref(0)
 const limit = ref(0)
 const decimals = ref(0)
