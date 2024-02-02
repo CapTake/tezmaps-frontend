@@ -1,7 +1,7 @@
 <template>
     <button @click="toggleConnection">
        <span v-if="conn.connecting" class="loading loading-spinner"></span>
-        {{ label }}
+        <span class="tracking-tighter md:tracking-normal">{{ label }}</span>
     </button>
 </template>
 

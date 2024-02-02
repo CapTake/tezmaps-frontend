@@ -1,5 +1,6 @@
-import { packDataBytes } from '@taquito/michel-codec'
+import { packDataBytes, unpackDataBytes } from '@taquito/michel-codec'
 import { Schema } from '@taquito/michelson-encoder'
+import { mic2arr } from '@taquito/utils'
 import { tzrc20CommandType } from "./tzrc-20-type"
 
 const encode = (params) => {
@@ -35,3 +36,9 @@ export const prepareOperation = ({ op, tick, max, amt, lim, nbf = 0, cd = 0, dec
 
     return packDataBytes(encoded)    
 }
+
+export const decodeBytes = (string) => {
+    const unpacked = unpackDataBytes(string)
+    return mic2arr(unpacked)
+}
+
