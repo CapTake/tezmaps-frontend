@@ -94,7 +94,7 @@ const deployToken = async () => {
 
 const load = async () => {
     try {
-
+        // TZKT Query
         const response = await fetch("https://api.tzkt.io/v1/contracts/KT1UURhEJPhvqp4xgF4C9ZVddJ8Qd34hHXtZ/bigmaps/state/keys?active=true&select=key,value&key=%22"+props.protocol+":"+props.tick+"%22");
         const block = await response.json()
 
@@ -112,9 +112,9 @@ const load = async () => {
         nbf.value = data[2] === 0 ? 0 : new Date(data[2]*1000).toISOString().slice(0,16)
         exp.value = data[6] === 0 ? 0 : new Date(data[6]*1000).toISOString().slice(0,16)
 
-   
+        // API Query
         const subscribe = !recordId.value
-        const { id, total_supply } = await api.collection('protocol_tickets').getFirstListItem('p="tzrc-20b:test"')
+        const { id, total_supply } = await api.collection('protocol_tickets').getFirstListItem("p='"+props.protocol+":"+props.tick+"'")
         recordId.value = id
          minted.value = new BigNumber(total_supply).dividedBy(new BigNumber(1_000)).toNumber()
         if (subscribe) {
