@@ -81,7 +81,7 @@
                 {{ p }}
             </button>
         </div>
-        <dialog ref="sendDialog" class="p-5 rounded-lg shadow-md bg-white max-w-full w-[400px]">
+        <dialog ref="sendDialog" class="p-5 rounded-lg shadow-md bg-white dark:bg-darkgrey dark:text-light max-w-full w-[400px]">
             <h3 class="w-full flex justify-between items-center mb-4 text-xl">
                 <span>Sending</span>
                 <button @click="() => sendDialog.close()" class="p-2 rounded-full -m-4 hover:bg-gray-100 text-gray-700">
@@ -95,10 +95,10 @@
             </div>
             <label class="my-6 text-center flex gap-2 justify-between items-center border  p-2 rounded whitespace-nowrap" :class="{'border-slate-300': !destError, 'border-red-400': destError}">
                 <span class="flex-shrink">To:</span>
-                <input type="text" v-model.trim="destAddress" class="flex-grow outline-none" placeholder="tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV" novalidate @focus="destError = false" /> 
+                <input type="text" v-model.trim="destAddress" class="flex-grow outline-none dark:bg-slate-300" placeholder="tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV" novalidate @focus="destError = false" /> 
             </label>
             <div class="flex justify-between items-center">
-                <button @click="() => sendDialog.close()" class="px-5 py-1.5 hover:bg-slate-200 rounded  bg-slate-100 text-slate-600">
+                <button @click="() => sendDialog.close()" class="px-5 py-1.5 hover:bg-slate-500 rounded  bg-slate-700 text-white hover:bg-slate-500">
                     Cancel
                 </button>
                 <button @click="sendTicket" :class="BTN">
@@ -116,12 +116,12 @@ import { ticketParams } from '../util/ticket'
 import BigNumber from 'bignumber.js'
 import { toast } from 'vue3-toastify'
 import { validateAddress, char2Bytes, bytes2Char } from '@taquito/utils'
+import { BTN } from '../util/constants.js'
 // import { TicketTokenParams } from '@taquito/rpc'
 
-const TRUSTED = ['tezmap', 'tzrc-20:tezi']
+const TRUSTED = ['tezmap', 'tzrc-20:tezi', 'tzrc-20b-tzntz']
 const DEPRECATED = ['tezmaps']
 
-const BTN = import.meta.env.VITE_BTN_CLASS
 const TICKETER = import.meta.env.VITE_TICKETER
 const PROXY = import.meta.env.VITE_PROXY_CONTRACT
 
@@ -262,8 +262,10 @@ const loadData = async () => {
             let b = new BigNumber(balance)
             let decimals = 0
             let content = c
+
             if(protocol === 'tzrc-20' || protocol === 'tzrc-20b') {
                 decimals = parseInt(c, 16)
+                console.log(decimals)
                 b = b.dividedBy(new BigNumber(10).pow(decimals))
                 content = ''
             } else if(protocol === 'tezmap') {
@@ -282,6 +284,7 @@ const loadData = async () => {
                 decimals,
                 holder
             }
+
         })
     } catch (e) {
         console.log(e)

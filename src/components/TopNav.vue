@@ -29,7 +29,7 @@
 import Logo from './Logo.vue'
 import SyncButton from './SyncButton.vue'
 import { inject, ref, computed } from 'vue'
-const BTN = import.meta.env.VITE_BTN_CLASS
+import { BTN } from '../util/constants.js'
 
 const menu = ref(false)
 const account = inject('walletConnection')

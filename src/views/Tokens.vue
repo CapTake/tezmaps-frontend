@@ -48,8 +48,6 @@ import BigNumber from 'bignumber.js'
 const TRUSTED = ['tezmap', 'tzrc-20:tezi', 'tzrc-20b:test',] 
 const DEPRECATED = ['tezmaps']
 
-const BTN = import.meta.env.VITE_BTN_CLASS
-
 const loading = ref(false)
 
 const supply = ref(1)

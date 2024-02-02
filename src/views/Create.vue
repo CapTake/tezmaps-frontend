@@ -25,7 +25,7 @@
                 <div class="px-4 py-5 flex-auto">
                 <div class="tab-content tab-space">
                     <div v-bind:class="{'hidden': openTab !== 1, 'block': openTab === 1}">
-                        <p class="md:text-md text-slate-500 dark:text-slate-300 mb-6">Deploy your own TZRC-20 token</p>
+                        <p class="md:text-md text-slate-500 dark:text-slate-300 mb-6">Deploy your own tzrc-20 token</p>
                         <form @submit.prevent="onSubmit">
                             <div class="flex justify-center">
                                 <div class="grid grid-cols-1 gap-5 text-left text-black flex justify-center ">
@@ -128,6 +128,7 @@
 import { ref, inject, computed } from 'vue'
 import { toast } from 'vue3-toastify'
 import { prepareOperation } from '../util/tzrc-20'
+import { BTN } from '../util/constants.js'
 import BigNumber from 'bignumber.js'
 
 const openTab = ref(1)
@@ -135,7 +136,6 @@ const openTab = ref(1)
 const toggleTabs = (tabNumber) => {
     openTab.value = tabNumber
 }
-const BTN = import.meta.env.VITE_BTN_CLASS
 
 const KT = import.meta.env.VITE_TICKETER
 const minting = ref(false)
