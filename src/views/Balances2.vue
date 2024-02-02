@@ -1,6 +1,6 @@
 <template>
     <div class="w-full min-h-screen reative px-5 ">
-        <h1 class="mt-10 mb-6 tezt text-xl">Your holdings</h1>
+        <h1 class="mt-10 mb-6 tezt text-xl">Your Holdings</h1>
         <div v-if="loading" class="inset-0 flex justify-center items-center pointer-events-none">
             <div class="flex justify-center items-center max-w-[300px] rounded-lg py-20 px-16 shadow-lg">
                 <svg aria-hidden="true" class="w-12 h-12 text-slate-400 animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

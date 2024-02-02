@@ -1,43 +1,49 @@
 <template>
     <div class="mx-auto w-full max-w-6xl py-12 text-center px-4">
-        <h1 class="text-5xl font-light mb-8 tracking-wider">{{ tick.toUpperCase() }}</h1>
+        <h1 class="text-4xl lg:text-5xl font-light mb-8 tracking-wider">{{ props.tick.toUpperCase() }}</h1>
         <p class="md:text-lg mb-12 text-slate-500">Tezos inscriptions tzrc-20 token experiment</p>
         <h2 class="text-2xl mb-10">Total supply: {{ supply }}</h2>
+        <h3 v-if="protocol == 'tzrc-20b'" class="text mb-1 text-slate-500">Block Cooldown: {{ cd }}</h3>
         <div class="flex justify-center gap-1 items-center px-1 mb-8">
             <progress max="100" :value="percentMinted" class="max-w-full h-8 bg-darkblue text-main rounded-sm w-[500px] transition-all"></progress>
             <span>{{ percentMinted }}%</span>
         </div>
         <p class="text-sm h-10 text-slate-500">{{ operation }}</p>
-        <button v-if="minted < SUPPLY" @click="mint" :class="BTN">Inscribe {{ LIMIT }} {{ tick.toUpperCase() }}</button><button v-else :class="BTN">Mint concluded</button>
+        <button v-if="minted < supply" @click="mint" :class="BTN">Inscribe {{ limit }} {{ props.tick.toUpperCase() }}</button><button v-else :class="BTN">Mint concluded</button>
     </div>
 </template>
 
 <script setup>
 import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue'
 import { toast } from 'vue3-toastify'
-import { prepareOperation } from '../util/tzrc-20'
+import { prepareOperation, decodeBytes } from '../util/tzrc-20'
 import BigNumber from 'bignumber.js'
 import api from '../util/api'
 
+const props = defineProps({protocol:String, tick:String})
+
+console.log(props)
+
 const BTN = import.meta.env.VITE_BTN_CLASS
 const KT = import.meta.env.VITE_TICKETER
-const PROTOCOL = 'tzrc-20'
-const LIMIT = 1000
-const SUPPLY = 21_000_000
 
-const minted = ref(7000000)
 const minting = ref(false)
 const operation = ref('')
 const recordId = ref(null)
 
-let tick = ref('')
-let supply = ref('')
+const supply = ref(0)
+const cd = ref(0)
+const limit = ref(0)
+const decimals = ref(0)
+const nbf = ref(0)
+const exp = ref(0)
+const minted = ref(0)
 
 const account = inject('walletConnection')
 const contractAt = inject('contract')
 const connect = inject('connectWallet')
 
-const percentMinted = computed(() => (minted.value / SUPPLY * 100).toFixed(2))
+const percentMinted = computed(() => (new BigNumber(minted.value).toFixed() / new BigNumber(supply.value).toFixed() * 100).toFixed(2))
 const isConnected = computed(() => !!account.address)
 
 const inscribe = async (protocol, claim) => {
@@ -79,7 +85,7 @@ const mint = async () => {
 }
 
 const deployToken = async () => {
-    const { bytes } = prepareOperation({ op: 'deploy', tick: 'tezi', max: SUPPLY, lim: LIMIT, cd: 10, nbf: 0, dec: 6 }) //exp for ending timestamp
+    const { bytes } = prepareOperation({ op: 'deploy', tick: 'tezi', max: supply, lim: limit, cd: 10, nbf: 0, dec: 6 }) //exp for ending timestamp
     console.log(bytes)
     await inscribe(PROTOCOL, bytes)
 }
@@ -87,20 +93,28 @@ const deployToken = async () => {
 const load = async () => {
     try {
 
-        const url = window.location.href
+        const response = await fetch("https://api.tzkt.io/v1/contracts/KT1UURhEJPhvqp4xgF4C9ZVddJ8Qd34hHXtZ/bigmaps/state/keys?active=true&select=key,value&key=%22"+props.protocol+":"+props.tick+"%22");
+        const block = await response.json()
 
-        if (url.includes("?")) {
-                const [, split] = url.split('?')
-                const [rest,] = split.split('#')
-                tick = rest
-                console.log(tick)
-        }
-        
+        console.log(block)
+
+        const data = decodeBytes({ bytes: block[0].value})
+
+        console.log(data)
+
+        cd.value = new BigNumber(data[0]).toFixed()
+        decimals.value = new BigNumber(data[1]).toFixed()
+        limit.value = new BigNumber(data[3]).toFixed()
+        minted.value = new BigNumber(data[5]).toFixed()
+        supply.value = new BigNumber(data[4]).toFixed()
+        nbf.value = new Date(data[2]*1000)
+        exp.value = new Date(data[6]*1000)
+
+        /*
         const subscribe = !recordId.value
         const { id, total_supply } = await api.collection('protocol_tickets').getFirstListItem('p="tzrc-20b:test"')
         recordId.value = id
-        supply.value = new BigNumber(total_supply)
-        minted.value = new BigNumber(total_supply).dividedBy(new BigNumber(1_000)).toNumber()
+         minted.value = new BigNumber(total_supply).dividedBy(new BigNumber(1_000)).toNumber()
         if (subscribe) {
             console.log('subscription')
             await api.collection('protocol_tickets').subscribe(id, (message) => {
@@ -110,7 +124,7 @@ const load = async () => {
             }).catch(e => {
                 console.log(e)
             })
-        }
+        } */
     } catch (e) {
         console.log(e)
     }
@@ -128,7 +142,7 @@ onBeforeUnmount(() => {
 <style scoped>
 progress[value] {
   --pb-color: #2F59ED; /* the progress color */
-  --pb-background: lightgrey; /* the background color */
+  --pb-background: #cbd5e1; /* the background color */
 
   -webkit-appearance: none;
   -moz-appearance: none;

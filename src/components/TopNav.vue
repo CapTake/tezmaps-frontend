@@ -1,7 +1,7 @@
 <template>
     <nav class="font-light font-customFont text-black dark:text-light">
         <router-link to="/" class="flex gap-1 items-center">
-            <Logo style="width:35px;margin-top:-3px"/><span class="font-normal text-black dark:text-light text-2xl lowercase hover:font-bold" style="margin-top:-2px;">Tezi Network</span>
+            <Logo style="width:35px;margin-top:2px"/><span class="transition-all font-normal text-black dark:text-light text-2xl uppercase invisible sm:visible hover:text-blue-500 " style="margin-top:3px;">Tezi Network</span>
         </router-link>
         <div class="grow"></div>
         <div @click="menu = false" class="md:flex md:justify-between gap-5 md:flex-row flex-col absolute md:static bg-white dark:bg-black top-16 right-4 rounded shadow-md md:shadow-none md:p-1 p-5" :class="{hidden: !menu, flex: menu}">
@@ -12,10 +12,11 @@
             </router-link>
             <router-link to="/tokens" class="transition-all hover:text-blue-500">Tokens</router-link>
             <router-link to="/create" class="transition-all hover:text-blue-500">Inscribe</router-link>
+            <!--<router-link :to="{ name: 'mint', params: { protocol: 'tzrc-20', tick: 'tezi' }}" class="transition-all hover:text-blue-500">Mint</router-link>-->
             <router-link to="/trade" class="transition-all hover:text-blue-500">Market</router-link>
             <router-link to="/docs" class="transition-all hover:text-blue-500">Docs</router-link>
         </div>
-        <SyncButton :class="BTN" class="mb-0 mt-2"/>
+        <SyncButton :class="BTN" class="mb-0 mt-2 btn-xs"/>
         <button @click="menu = !menu" class="rounded-full text-slate-600 hover:text-[#2196f3] flex md:hidden">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8">
                 <path fill-rule="evenodd" d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />

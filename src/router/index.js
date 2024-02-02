@@ -11,11 +11,11 @@ const routes = [
   { path: '/docs', component: ComingSoon, meta: { title: 'Docs' } },
   { path: '/balance', component: Balances, meta: { title: 'Balance', authenticated: true } },
   { path: '/trade', component: ComingSoon, meta: { title: 'Marketplace' } },
-  { path: '/mint', component: Mint, meta: { title: 'Mint Token' } },
+  { path: '/mint/:protocol/:tick', name: 'mint', component: Mint, meta: { title: 'Mint Token' }, props: true },
   { path: '/create', component: Create, meta: { title: 'Create Inscription'}},
   { path: '/tokens', component: Tokens, meta: { title: 'Inscriptions'}}
-
 ]
+
 const router = createRouter({
   history: createWebHashHistory(),
   routes,

@@ -1,22 +1,22 @@
 <template>
     <div class="mx-auto w-full max-w-2xl py-12 text-center px-4">
-        <h1 class="text-5xl font-light mb-8 tracking-wider">Inscribe</h1>
+        <h1 class="text-4xl lg:text-5xl font-light mb-8 tracking-wider ">Inscribe</h1>
 
         <div class="flex flex-wrap">
             <div class="w-full">
-            <ul class="flex mb-0 list-none flex-wrap pt-3 pb-12 flex-row">
-                <li class="-mb-px mr-2 last:mr-0 flex-auto text-center">
-                <a class="text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" @click="toggleTabs(1)" v-bind:class="{'text-lightgrey bg-light hover:to-lightblue hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 1, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 1}">
+            <ul class="flex mb-0 list-none flex-wrap pt-3 pb-3 flex-row">
+                <li class="-mb-px mr-2 last:mr-0 flex-auto text-center mb-3">
+                <a class="text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" @click="toggleTabs(1)" v-bind:class="{'text-lightgrey bg-slate-300 hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 1, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 1}">
                     TZRC-20
                 </a>
                 </li>
-                <li class="-mb-px mr-2 last:mr-0 flex-auto text-center">
-                <a class="text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" disabled @click="toggleTabs(2)" v-bind:class="{'text-lightgrey bg-light hover:to-lightblue hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 2, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 2}">
+                <li class="-mb-px mr-2 last:mr-0 flex-auto text-center mb-3">
+                <a class="text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" disabled @click="toggleTabs(2)" v-bind:class="{'text-lightgrey bg-slate-300 hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 2, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 2}">
                     File
                 </a>
                 </li>
-                <li class="-mb-px mr-2 last:mr-0 flex-auto text-center">
-                <a class="text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" disabled @click="toggleTabs(3)" v-bind:class="{'text-lightgrey bg-light hover:to-lightblue hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 3, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 3}">
+                <li class="-mb-px mr-2 last:mr-0 flex-auto text-center mb-3">
+                <a class="text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" disabled @click="toggleTabs(3)" v-bind:class="{'text-lightgrey bg-slate-300 hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 3, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 3}">
                     Text
                 </a>
                 </li>
@@ -149,8 +149,8 @@ const deployToken = async () => {
         max: new BigNumber(supply.value).toFixed(),
         lim: new BigNumber(maxClaim.value).toFixed(),
         cd: new BigNumber(cooldown.value).toFixed(), 
-        nbf: startDate.value, 
-        exp: endDate.value,
+        nbf: new Date(startDate.value * 1000), 
+        exp: new Date(endDate.value * 1000),
         dec: new BigNumber(decimals.value).toFixed()
     }) 
     console.log(bytes)

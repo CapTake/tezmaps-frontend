@@ -1,6 +1,6 @@
 <template>
-    <div class="w-full min-h-screen reative px-5">
-        <h1 class="mt-10 mb-6 tezt text-xl">All tokens</h1>
+    <div class="mx-auto w-full max-w-2xl min-h-screen reative px-5">
+        <h1 class="mt-10 mb-6 tezt text-xl "> Tokens</h1>
         <div v-if="loading" class="inset-0 flex justify-center items-center pointer-events-none">
             <div class="flex justify-center items-center max-w-[300px] rounded-lg py-20 px-16 shadow-lg">
                 <svg aria-hidden="true" class="w-12 h-12 text-slate-400 animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -9,23 +9,33 @@
                 </svg>
             </div>
         </div>
-        <div v-else-if="items.length === 0" class="flex flex-col items-center h-[50vh] justify-center py-40 w-full text-slate-400">
+        <div v-else-if="tokens.length === 0" class="flex flex-col items-center h-[50vh] justify-center py-40 w-full text-slate-400">
             <div class="text-center mb-10">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859m-19.5.338V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H6.911a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661Z" />
                 </svg>
             </div>
-            There is nothing here yet.
+            Loading...
         </div>
-        <div v-else class="w-full grid grid-cols-1 gap-2 xl:gap-3 mb-8">
-            <article v-for="item in items" :key="item.id" class="border border-slate-300 rounded-lg shadow hover:shadow-lg px-3 md:px-5 bg-white dark:bg-darkgrey dark:border-lightgrey relative font-mono tracking-tight">
-                Test <button :class="BTN" class="mt-2 float-right">View Token</button>
-            </article>
-        </div>
-        <div v-if="totalPages > 1" class="flex justify-center gap-2 w-full items-center max-w-[300px] mx-auto overflow-clip mt-8">
-            <button @click="goToPage(p)" v-for="p in paging" :key="p" class="px-3 py-1.5 hover:bg-slate-200 dark:hover:bg-darkblue rounded" :class="{'bg-slate-200': p === page}, {'dark:bg-darkblue': p === page}">
-                {{ p }}
-            </button>
+        <div v-else class="w-full grid grid-cols-1 gap-2 xl:gap-4 mb-8">
+            <div v-for="item in tokens" :key="item.id" class="uppercase border border-slate-300 rounded-lg shadow hover:shadow-lg p-4 md:p-5 bg-white dark:bg-darkgrey dark:border-lightgrey dark:hover:border-slate-600 relative tracking-tight">
+                <router-link :to="{ name: 'mint', params: { protocol: item.protocol, tick: item.ticker }}">
+                <div class="text-md flex align-middle">
+                    <div class="w-[80px] pe-3">
+                        <span class="lowercase tracking-tight inline-block whitespace-nowrap rounded-[0.27rem] px-[0.65em] pb-[0.25em] pt-[0.35em] text-center align-baseline text-[0.60em] font-bold leading-none text-neutral-50 bg-lightblue">{{ item.protocol }}</span> 
+                     </div>
+                     <div class="w-[75px] align-middle inline-block pt-[3px]">
+                         {{ item.ticker }} 
+                      </div>
+                      <div class="w-[350px] pe-3">
+                            <progress max="100" :value="item.percentMinted" class="h-2 rounded-sm w-1/2 max-w-[125px] transition-all"></progress><span class="text-xs">{{ item.percentMinted }}%</span>
+                      </div>
+                      <div class="ml-auto">
+                        <router-link :to="{ name: 'mint', params: { protocol: item.protocol, tick: item.ticker }}" class="align-middle inline-block"> <span class="text-xl ">></span></router-link>
+                      </div>
+                </div>
+                </router-link>
+            </div>
         </div>
     </div>
 </template>
@@ -34,6 +44,7 @@
 import { inject, ref, watchEffect, computed } from 'vue'
 import api from '../util/api'
 import { ticketParams } from '../util/ticket'
+import { decodeBytes } from '../util/tzrc-20'
 import BigNumber from 'bignumber.js'
 import { toast } from 'vue3-toastify'
 import { validateAddress, char2Bytes, bytes2Char } from '@taquito/utils'
@@ -43,83 +54,58 @@ const TRUSTED = ['tezmap', 'tzrc-20:tezi']
 const DEPRECATED = ['tezmaps']
 
 const BTN = import.meta.env.VITE_BTN_CLASS
-const TICKETER = import.meta.env.VITE_TICKETER
-const PROXY = import.meta.env.VITE_PROXY_CONTRACT
-
-const account = inject('walletConnection')
-const BALANCE_VIEW = 'balance_view'
 
 const loading = ref(false)
 
-const items = ref([])
-const page = ref(1)
-const perPage = ref(24)
-const totalPages = ref(1)
-const filter = computed(() => `holder = "${account.address || ''}"`)
-const paging = computed(() => {
-    const current = page.value
-    const last = totalPages.value
-    let res  = current > 1 && current < last ? [current] : []
-    const len = 3
-    for (let i = 1; i <= len; i++) {
-        let p = current - i
-        if (p > 1 && p < last && res.length < len) {
-            res = [p, ...res]
-        }
-        p = current + i
-        if (p > 1 && p < last && res.length < len) {
-            res = [...res, p]
-        }
-    }
-    if (last > 1) {
-        res.push(last)
-    }
-    return [1, ...res]
-})
+const supply = ref(0)
+const cd = ref(0)
+const limit = ref(0)
+const decimals = ref(0)
+const nbf = ref(0)
+const exp = ref(0)
+const minted = ref(0)
 
-const goToPage = (n) => {
-    page.value = n
-    lastBlock()
-    loadData()
-}
-
-const contractAt = inject('contract')
-const transferTicket = inject('transferTicket')
+const tokens = ref([])
 
 const loadData = async () => {
     try {
-        loading.value = true
-        const { page: p, perPage: pp, totalPages: tp, items: res } = await api.collection(BALANCE_VIEW)
-            .getList(page.value, perPage.value, { filter: filter.value, sort: '-updated' })
-        page.value = p
-        perPage.value = pp
-        totalPages.value = tp
-        items.value = (res || []).map(({id, p, total_supply, balance, c, holder}) => {
-            const [protocol, ticker] = p.split(':')
-            let b = new BigNumber(balance)
-            let decimals = 0
-            let content = c
-            if(protocol === 'tzrc-20' || protocol === 'tzrc-20b') {
-                decimals = parseInt(c, 16)
-                b = b.dividedBy(new BigNumber(10).pow(decimals))
-                content = ''
-            } else if(protocol === 'tezmap') {
-                content = bytes2Char(content)
-            }
+        const response = await fetch('https://api.tzkt.io/v1/contracts/KT1UURhEJPhvqp4xgF4C9ZVddJ8Qd34hHXtZ/bigmaps/state/keys?active=true&select=key,value&key.as=tzrc-20*');
+        const block = await response.json()
+
+        tokens.value = (block || []).map(({key, value}) => {
+
+            const [protocol, ticker] = key.split(':')
+
+            const data = decodeBytes({ bytes: value})
+
+            cd.value = new BigNumber(data[0]).toFixed()
+            decimals.value = new BigNumber(data[1]).toFixed()
+            limit.value = new BigNumber(data[3]).toFixed()
+            minted.value = new BigNumber(data[5]).toFixed()
+            supply.value = new BigNumber(data[4]).toFixed()
+            nbf.value = new Date(data[2]*1000)
+            exp.value = new Date(data[6]*1000)      
+            
+            const percentMinted = (minted.value / supply.value * 100).toFixed(2)
 
             return {
-                id,
                 protocol,
-                trusted: TRUSTED.includes(p),
-                deprecated: DEPRECATED.includes(p),
                 ticker,
-                content,
-                balance: b.toFormat(),
-                total: total_supply,
-                decimals,
-                holder
+                cd: cd.value,
+                decimals: decimals.value,
+                limit: limit.value,
+                minted: minted.value,
+                supply: supply.value,
+                nbf: nbf.value,
+                exp: exp.value,
+                percentMinted, percentMinted
             }
+
         })
+
+        loading.value = true
+        console.log(tokens.value)
+
     } catch (e) {
         console.log(e)
     } finally {
@@ -128,6 +114,32 @@ const loadData = async () => {
 }
 
 watchEffect(async () => {
-   await loadData(filter.value)
+   await loadData()
 })
 </script>
+<style scoped>
+progress[value] {
+  --pb-color: rgb(47 89 237); /* the progress color */
+  --pb-background: #cbd5e1; /* the background color */
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  margin: 0 10px;
+  border-radius: 0.2rem;
+  background: var(--pb-background);
+}
+progress[value]::-webkit-progress-bar {
+  border-radius: 0.2rem;
+  background: var(--pb-background);
+}
+progress[value]::-webkit-progress-value {
+  border-radius: 0.2rem;
+  background: var(--pb-color);
+}
+progress[value]::-moz-progress-bar {
+  border-radius: 0.2rem;
+  background: var(--pb-color);
+}
+</style>
