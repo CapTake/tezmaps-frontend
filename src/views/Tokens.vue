@@ -41,13 +41,9 @@
 </template>
 
 <script setup>
-import { inject, ref, watchEffect, computed } from 'vue'
-import api from '../util/api'
-import { ticketParams } from '../util/ticket'
+import { ref, watchEffect, computed } from 'vue'
 import { decodeBytes } from '../util/tzrc-20'
 import BigNumber from 'bignumber.js'
-import { toast } from 'vue3-toastify'
-import { validateAddress, char2Bytes, bytes2Char } from '@taquito/utils'
 
 const TRUSTED = ['tezmap', 'tzrc-20:tezi', 'tzrc-20b:test',] 
 const DEPRECATED = ['tezmaps']
