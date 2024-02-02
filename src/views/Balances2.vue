@@ -264,8 +264,8 @@ const loadData = async () => {
             let content = c
 
             if(protocol === 'tzrc-20' || protocol === 'tzrc-20b') {
-                decimals = parseInt(c, 16)
-                console.log(decimals)
+                decimals = new BigNumber(parseInt(c, 16)).toNumber()
+                if(isNaN(decimals)){decimals = 0}
                 b = b.dividedBy(new BigNumber(10).pow(decimals))
                 content = ''
             } else if(protocol === 'tezmap') {
