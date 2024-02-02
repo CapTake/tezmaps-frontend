@@ -3,9 +3,14 @@
         <BlockMap :width="width" :height="height/2" :offset="offset" :limit="5000" :row-width="100" @selected="showPopup" class="mx-4">
         </BlockMap>
         <div class="w-full px-5">
-            <h2 class="text-center py-6 text-xl font-semibold">Tezmaps {{ firstBlock }} &ndash; {{ firstBlock + 4999 }} </h2>
+            <h2 class="text-center pt-6 text-xl font-semibold">Tezmaps {{ firstBlock }} &ndash; {{ firstBlock + 4999 }} </h2>
+            <div class="text-xs text-slate-500 pt-3 pb-0.25">Go to</div>
+            <input type="number" class="text-black w-[125px] text-lg rounded-xl bg-slate-300 " style="opacity:1!Important;" :step="5000" :min="0" :max="lastBlock" v-model.number="firstBlock" @change="(e) => {offset = +e.target.value}" @input="(e) => console.log(e.target.value, offset)">
+            <div class="text-xs text-slate-500 pt-0.5 pb-3">Choose only 5,000 Steps</div>
+
             <input v-model.number="firstBlock" type="range" :min="0" :max="lastBlock" :step="5000" @change="(e) => {offset = +e.target.value}" @input="(e) => console.log(e.target.value, offset)" class="w-full accent-slate-400">
-            <input type="number" class="text-black w-[100px] text-xs rounded-xl bg-slate-300" style="opacity:1!Important;" :step="5000" :min="0" :max="lastBlock" v-model.number="firstBlock" @change="(e) => {offset = +e.target.value}" @input="(e) => console.log(e.target.value, offset)"><span class="text-xs text-slate-500"> (5000 Steps)</span>
+         
+            <h3 class="pt-6 dark:text-slate-300">Tezmaps is the first Tezoscription. Each Block on Tezos is represented by a plot in the Tezmaps protocol, that can be claimed only once.</h3>
         </div>
     </div>
     <div class="fixed w-full h-0 bottom-0 z-50">

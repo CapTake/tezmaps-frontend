@@ -3,11 +3,13 @@
         <h1 class="text-4xl lg:text-5xl font-light mb-8 tracking-wider">{{ props.tick.toUpperCase() }}</h1>
         <p class="md:text-lg mb-12 text-slate-500">Tezos inscriptions tzrc-20 token experiment</p>
         <h2 class="text-2xl mb-10">Total supply: {{ supply }}</h2>
-        <h3 v-if="protocol == 'tzrc-20b'" class="text mb-1 text-slate-500">Block Cooldown: {{ cd }}</h3>
+        <h3 v-if="protocol == 'tzrc-20b'" class="text mb-1 text-slate-500">Inscription Cooldown: {{ cd }}</h3>
         <div class="flex justify-center gap-1 items-center px-1 mb-8">
             <progress max="100" :value="percentMinted" class="max-w-full h-8 bg-darkblue text-main rounded-sm w-[500px] transition-all"></progress>
             <span>{{ percentMinted }}%</span>
         </div>
+        <div v-if="nbf" class="text-slate-500">Mint Start: {{ nbf }}</div>
+        <div v-if="exp" class="text-slate-500">Mint End: {{ exp }}</div>
         <p class="text-sm h-10 text-slate-500">{{ operation }}</p>
         <button v-if="minted < supply" @click="mint" :class="BTN">Inscribe {{ limit }} {{ props.tick.toUpperCase() }}</button><button v-else :class="BTN">Mint concluded</button>
     </div>
@@ -107,10 +109,10 @@ const load = async () => {
         limit.value = new BigNumber(data[3]).toFixed()
         minted.value = new BigNumber(data[5]).toFixed()
         supply.value = new BigNumber(data[4]).toFixed()
-        nbf.value = new Date(data[2]*1000)
-        exp.value = new Date(data[6]*1000)
+        nbf.value = data[2] === 0 ? 0 : new Date(data[2]*1000).toISOString().slice(0,16)
+        exp.value = data[6] === 0 ? 0 : new Date(data[6]*1000).toISOString().slice(0,16)
 
-        /*
+   
         const subscribe = !recordId.value
         const { id, total_supply } = await api.collection('protocol_tickets').getFirstListItem('p="tzrc-20b:test"')
         recordId.value = id
@@ -124,7 +126,7 @@ const load = async () => {
             }).catch(e => {
                 console.log(e)
             })
-        } */
+        } 
     } catch (e) {
         console.log(e)
     }

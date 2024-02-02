@@ -26,73 +26,85 @@
                 <div class="tab-content tab-space">
                     <div v-bind:class="{'hidden': openTab !== 1, 'block': openTab === 1}">
                         <p class="md:text-md text-slate-500 dark:text-slate-300 mb-6">Deploy your own TZRC-20 token</p>
-                        <div class="flex justify-center">
-                            <div class="grid grid-cols-1 gap-5 text-left text-black flex justify-center ">
-                            <label class="block">
-                            <span class="text-slate-500">Protocol*</span>
-                            <select v-model="protocol" class="lowercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-                                <option value="tzrc-20">TZRC-20</option>
-                                <option value="tzrc-20b">TZRC-20B (More Options)</option>
-                            </select>
-                            </label>
-                            <label class="block">
-                                <span class="text-slate-500">Token Ticker*</span>
-                                <input v-model="ticker"
-                                type="text"
-                                class="lowercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="i.e. tezi (4-6 length)"
-                                />
-                            </label>
-                            <label class="block">
-                                <span class="text-slate-500">Total Supply*</span>
-                                <input v-model="supply"
-                                type="text"
-                                class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="i.e. 21,000,000"
-                                />
-                            </label>
-                            <label class="block">
-                                <span class="text-slate-500">Max Token per Claim*</span>
-                                <input v-model="maxClaim"
-                                type="number"
-                                class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="i.e. 1000"
-                                />
-                            </label>
-                            <label class="block">
-                                <span class="text-slate-500">Decimals*</span>
-                                <input v-model="decimals"
-                                type="number" min="0" max="18"
-                                class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="0 to 18"
-                                />
-                            </label>
-                            <label v-show="protocol == 'tzrc-20b'" class="block">
-                                <span class="text-slate-500">Claim Cooldown (Blocks)*</span>
-                                <input v-model="cooldown"
-                                type="number" min="1" step="1"
-                                class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="1 or higher"
-                                />
-                            </label>
-                            <label class="block" v-show="protocol == 'tzrc-20b'">
-                                <span class="text-slate-500">Start Date</span>
-                                <input v-model="startDate"
-                                type="datetime-local"
-                                class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                />
-                            </label>
-                            <label class="block" v-show="protocol == 'tzrc-20b'">
-                                <span class="text-slate-500">End Date</span>
-                                <input v-model="endDate"
-                                type="datetime-local"
-                                class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                />
-                            </label>
+                        <form @submit.prevent="onSubmit">
+                            <div class="flex justify-center">
+                                <div class="grid grid-cols-1 gap-5 text-left text-black flex justify-center ">
+                                <label class="block">
+                                <span class="text-slate-500">Protocol*</span>
+                                <select v-model="protocol" class="lowercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <option value="tzrc-20">TZRC-20</option>
+                                    <option value="tzrc-20b">TZRC-20B</option>
+                                </select>
+                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">tzrc-20b offers more configuration like a fair Claim-Cooldown</p>
+                                </label>
+                                <label class="block">
+                                    <span class="text-slate-500">Ticker*</span>
+                                    <input v-model="ticker"
+                                    type="text"
+                                    class="lowercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    placeholder="i.e. tezi [4-6 chars]"
+                                    minlength="4" maxlength="6"
+                                    required
+                                    />
+                                </label>
+                                <label class="block">
+                                    <span class="text-slate-500">Supply*</span>
+                                    <input v-model="supply"
+                                    type="text"
+                                    class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    placeholder="i.e. 21,000,000"
+                                    minlength="1"
+                                    required
+                                    />
+                                </label>
+                                <label class="block">
+                                    <span class="text-slate-500">Claim Amount*</span>
+                                    <input v-model="maxClaim"
+                                    type="number"
+                                    class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    placeholder="i.e. 1000"
+                                    min="1" :max="supply"
+                                    required
+                                    />
+                                </label>
+                                <label class="block">
+                                    <span class="text-slate-500">Decimals*</span>
+                                    <input v-model="decimals"
+                                    type="number" 
+                                    class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    placeholder="i.e. 6 [0-18]"
+                                    min="0" max="18"
+                                    required
+                                    />
+                                </label>
+                                <label v-show="protocol == 'tzrc-20b'" class="block">
+                                    <span class="text-slate-500">Claim Cooldown*</span>
+                                    <input v-model="cooldown"
+                                    type="number" 
+                                    class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    placeholder="1 or more Blocks"
+                                    min="1" step="1"
+                                    />
+                                </label>
+                                <label class="block" v-show="protocol == 'tzrc-20b'">
+                                    <span class="text-slate-500">Start Date</span>
+                                    <input v-model="startDate"
+                                    type="datetime-local"
+                                    class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    />
+                                </label>
+                                <label class="block" v-show="protocol == 'tzrc-20b'">
+                                    <span class="text-slate-500">End Date</span>
+                                    <input v-model="endDate"
+                                    type="datetime-local"
+                                    class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    />
+                                </label>
+                                </div>
                             </div>
-                        </div>
-                        <p class="text-sm h-10 text-slate-500">{{ operation }}</p>
-                        <button @click="deployToken" type="button" :class="BTN">Inscribe Token</button>
+                            <p class="text-sm h-10 text-slate-500">{{ operation }}</p>
+                            <button type="submit" :class="BTN">Inscribe Token</button>
+                        </form>
                     </div>
                     <div v-bind:class="{'hidden': openTab !== 2, 'block': openTab === 2}">
                     <p>
@@ -137,24 +149,24 @@ const protocol = ref('tzrc-20')
 const ticker = ref('')
 const supply = ref('')
 const maxClaim = ref('')
-const cooldown = ref(0)
+const cooldown = ref('')
 const decimals = ref('')
 const startDate = ref('')
 const endDate = ref('')
 
-const deployToken = async () => {
+const onSubmit = async () => {
     const { bytes } = prepareOperation({ 
         op: 'deploy', 
         tick: ticker.value, 
         max: new BigNumber(supply.value).toFixed(),
         lim: new BigNumber(maxClaim.value).toFixed(),
-        cd: new BigNumber(cooldown.value).toFixed(), 
-        nbf: new Date(startDate.value * 1000), 
-        exp: new Date(endDate.value * 1000),
+        cd: protocol.value === 'tzrc-20' ? 0 : new BigNumber(cooldown.value).toFixed(), 
+        nbf: startDate.value === '' ? 0 : ((new Date(startDate.value)).getTime()/1000).toFixed(), 
+        exp: endDate.value === '' ? 0 : ((new Date(endDate.value)).getTime()/1000).toFixed(),
         dec: new BigNumber(decimals.value).toFixed()
     }) 
-    console.log(bytes)
-    await inscribe(protocol.value, bytes)
+    console.log(((new Date(startDate.value)).getTime()/1000).toFixed(), ((new Date(endDate.value)).getTime()/1000).toFixed())
+    await inscribe(protocol.value, bytes,)
 }
 
 const inscribe = async (protocol, claim) => {
