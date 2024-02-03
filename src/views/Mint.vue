@@ -10,9 +10,9 @@
         </div>
         <div v-if="mintStart" class="text-slate-500">Mint Start: {{ mintStart }}</div>
         <div v-if="mintEnd" class="text-slate-500">Mint End: {{ mintEnd }}</div>
-        <p class="text-sm h-10 text-slate-500">{{ operation }}</p>
-        <button v-if="canMint" @click="mint" :class="BTN">Inscribe {{ limit }} {{ props.tick.toUpperCase() }}</button>
-        <button v-else :class="BTN">{{ mintStatusLabel }}</button>
+        <p class="text-sm h-10 text-slate-500 mt-4">{{ operation }}</p>
+        <button v-if="canMint" @click="mint" class="btn-primary">Claim {{ limit }} {{ props.tick.toUpperCase() }}</button>
+        <button v-else class="btn-primary">{{ mintStatusLabel }}</button>
     </div>
 </template>
 
@@ -35,7 +35,6 @@ const props = defineProps({protocol:String, tick:String})
 
 console.log(props)
 
-const BTN = import.meta.env.VITE_BTN_CLASS
 const KT = import.meta.env.VITE_TICKETER
 
 const minting = ref(false)
@@ -43,12 +42,13 @@ const operation = ref('')
 const recordId = ref(null)
 
 const supply = ref(new BigNumber(1))
+const nbf = ref(new BigNumber(0))
+const exp = ref(new BigNumber(0))
 const cd = ref(0)
-const limit = ref(0)
+const limit = ref(new BigNumber(0))
 const decimals = ref(0)
-const nbf = ref(0)
-const exp = ref(0)
-const minted = ref(0)
+const minted = ref(new BigNumber(0))
+
 
 const account = inject('walletConnection')
 const contractAt = inject('contract')
