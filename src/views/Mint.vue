@@ -52,19 +52,19 @@ const minted = ref(0)
 
 const account = inject('walletConnection')
 const contractAt = inject('contract')
-const connect = inject('connectWallet')
+// const connect = inject('connectWallet')
 
 const canMint = computed(() => minted.value.lt(supply.value))
-const mintStart = computed(() => nbf.value.getTime() > 0 ? nbf.value.toLocaleString() : false)
-const mintEnd = computed(() => exp.value.getTime() > 0 ? exp.value.toLocaleString() : false)
+const mintStart = computed(() => nbf.value > 0 ? new Date(nbf.value * 1000).toLocaleString() : false)
+const mintEnd = computed(() => exp.value > 0 ? new Date(exp.value * 1000).toLocaleString() : false)
 
 const mintStatusLabel = computed(() => {
-    const now = Date.now()
-    if (now < nbf.value.getTime()) {
+    const now = Date.now() / 1000
+    if (now < nbf.value) {
         return 'Waiting for the start'
     } else if (supply.value.lte(minted.value)) {
         return 'Max supply reached'
-    } else if (now > exp.value.getTime()) {
+    } else if (now > exp.value) {
         return 'Timeout reached'
     }
     return '????'
@@ -134,8 +134,8 @@ const load = async () => {
         limit.value = new BigNumber(data[LIMI])
         minted.value = new BigNumber(data[MINTEDI])
         supply.value = new BigNumber(data[MAXI])
-        nbf.value = data[NBFI] === 0 ? 0 : new Date(data[NBFI]*1000)
-        exp.value = data[EXPI] === 0 ? 0 : new Date(data[EXPI]*1000)
+        nbf.value = data[NBFI]
+        exp.value = data[EXPI]
 
         // API Query
         const subscribe = !recordId.value
