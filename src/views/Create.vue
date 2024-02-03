@@ -6,17 +6,17 @@
             <div class="w-full">
             <ul class="flex mb-0 list-none flex-wrap pt-3 pb-3 flex-row">
                 <li class="-mb-px mr-2 last:mr-0 flex-auto text-center mb-3">
-                <a class="text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" @click="toggleTabs(1)" v-bind:class="{'text-lightgrey bg-slate-300 hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 1, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 1}">
+                <a class="lowercase text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" @click="toggleTabs(1)" v-bind:class="{'text-lightgrey bg-slate-300 hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 1, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 1}">
                     TZRC-20
                 </a>
                 </li>
                 <li class="-mb-px mr-2 last:mr-0 flex-auto text-center mb-3">
-                <a class="text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" disabled @click="toggleTabs(2)" v-bind:class="{'text-lightgrey bg-slate-300 hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 2, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 2}">
+                <a class="lowercase text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" disabled @click="toggleTabs(2)" v-bind:class="{'text-lightgrey bg-slate-300 hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 2, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 2}">
                     File
                 </a>
                 </li>
                 <li class="-mb-px mr-2 last:mr-0 flex-auto text-center mb-3">
-                <a class="text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" disabled @click="toggleTabs(3)" v-bind:class="{'text-lightgrey bg-slate-300 hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 3, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 3}">
+                <a class="lowercase text-xs font-bold uppercase px-5 py-3 shadow-lg rounded-lg block leading-normal cursor-pointer" disabled @click="toggleTabs(3)" v-bind:class="{'text-lightgrey bg-slate-300 hover:bg-gradient-to-r hover:from-lightblue hover:to-darkblue hover:text-white': openTab !== 3, 'text-white hover:to-lightblue bg-gradient-to-r from-lightblue to-darkblue': openTab === 3}">
                     Text
                 </a>
                 </li>
@@ -25,7 +25,7 @@
                 <div class="px-4 py-5 flex-auto">
                 <div class="tab-content tab-space">
                     <div v-bind:class="{'hidden': openTab !== 1, 'block': openTab === 1}">
-                        <p class="md:text-md text-slate-500 dark:text-slate-300 mb-6">Deploy your own TZRC-20 token</p>
+                        <p class="md:text-md text-slate-500 dark:text-slate-300 mb-6">Deploy your own tzrc-20 token</p>
                         <form @submit.prevent="onSubmit">
                             <div class="flex justify-center">
                                 <div class="grid grid-cols-1 gap-5 text-left text-black flex justify-center ">
@@ -33,58 +33,63 @@
                                 <span class="text-slate-500">Protocol*</span>
                                 <select v-model="protocol" class="lowercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="tzrc-20">TZRC-20</option>
-                                    <option value="tzrc-20b">TZRC-20B</option>
+                                    <option value="tzrc-20b">TZRC-20B (recommended)</option>
                                 </select>
-                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-400">tzrc-20b offers more configuration like a fair Claim-Cooldown</p>
+                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">tzrc-20b offers a fair distribution with a claim cooldown</p>
                                 </label>
                                 <label class="block">
                                     <span class="text-slate-500">Ticker*</span>
                                     <input v-model="ticker"
                                     type="text"
-                                    class="lowercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    placeholder="i.e. tezi [4-6 chars]"
+                                    class="uppercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    placeholder="tezi"
                                     minlength="4" maxlength="6"
                                     required
                                     />
+                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">The Token Ticker Name. Must be between 4 and 6 characters</p>
                                 </label>
                                 <label class="block">
                                     <span class="text-slate-500">Supply*</span>
                                     <input v-model="supply"
                                     type="text"
                                     class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    placeholder="i.e. 21,000,000"
+                                    placeholder="21,000,000"
                                     minlength="1"
                                     required
                                     />
+                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">The token supply. Claim tokens until total supply is reached</p> 
                                 </label>
                                 <label class="block">
                                     <span class="text-slate-500">Claim Amount*</span>
                                     <input v-model="maxClaim"
                                     type="number"
                                     class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    placeholder="i.e. 1000"
+                                    placeholder="1000"
                                     min="1" :max="supply"
                                     required
                                     />
+                                    <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Amount of tokens a wallet can mint each claim</p>
                                 </label>
                                 <label class="block">
                                     <span class="text-slate-500">Decimals*</span>
                                     <input v-model="decimals"
                                     type="number" 
                                     class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    placeholder="i.e. 6 [0-18]"
+                                    placeholder="6"
                                     min="0" max="18"
                                     required
                                     />
+                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Technical parameter for token decimals. Tez has 6 decimals</p>
                                 </label>
                                 <label v-show="protocol == 'tzrc-20b'" class="block">
                                     <span class="text-slate-500">Claim Cooldown*</span>
                                     <input v-model="cooldown"
                                     type="number" 
                                     class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    placeholder="1 or more Blocks"
+                                    placeholder="1"
                                     min="1" step="1"
                                     />
+                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Amount of cooldown time in blocks between token claims</p>
                                 </label>
                                 <label class="block" v-show="protocol == 'tzrc-20b'">
                                     <span class="text-slate-500">Start Date</span>
@@ -92,6 +97,7 @@
                                     type="datetime-local"
                                     class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
+                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Leave empty for mint starting without delay</p>
                                 </label>
                                 <label class="block" v-show="protocol == 'tzrc-20b'">
                                     <span class="text-slate-500">End Date</span>
@@ -99,11 +105,12 @@
                                     type="datetime-local"
                                     class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
+                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Leave empty for open end mint</p>
                                 </label>
                                 </div>
                             </div>
                             <p class="text-sm h-10 text-slate-500">{{ operation }}</p>
-                            <button type="submit" :class="BTN">Inscribe Token</button>
+                            <button type="submit" class="btn-primary">Inscribe Token</button>
                         </form>
                     </div>
                     <div v-bind:class="{'hidden': openTab !== 2, 'block': openTab === 2}">
@@ -135,7 +142,6 @@ const openTab = ref(1)
 const toggleTabs = (tabNumber) => {
     openTab.value = tabNumber
 }
-const BTN = import.meta.env.VITE_BTN_CLASS
 
 const KT = import.meta.env.VITE_TICKETER
 const minting = ref(false)

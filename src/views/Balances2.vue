@@ -81,7 +81,7 @@
                 {{ p }}
             </button>
         </div>
-        <dialog ref="sendDialog" class="p-5 rounded-lg shadow-md bg-white max-w-full w-[400px]">
+        <dialog ref="sendDialog" class="p-5 rounded-lg shadow-md bg-white dark:bg-darkgrey dark:text-light max-w-full w-[400px]">
             <h3 class="w-full flex justify-between items-center mb-4 text-xl">
                 <span>Sending</span>
                 <button @click="() => sendDialog.close()" class="p-2 rounded-full -m-4 hover:bg-gray-100 text-gray-700">
@@ -95,13 +95,13 @@
             </div>
             <label class="my-6 text-center flex gap-2 justify-between items-center border  p-2 rounded whitespace-nowrap" :class="{'border-slate-300': !destError, 'border-red-400': destError}">
                 <span class="flex-shrink">To:</span>
-                <input type="text" v-model.trim="destAddress" class="flex-grow outline-none" placeholder="tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV" novalidate @focus="destError = false" /> 
+                <input type="text" v-model.trim="destAddress" class="flex-grow outline-none dark:bg-slate-300" placeholder="tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV" novalidate @focus="destError = false" /> 
             </label>
             <div class="flex justify-between items-center">
-                <button @click="() => sendDialog.close()" class="px-5 py-1.5 hover:bg-slate-200 rounded  bg-slate-100 text-slate-600">
+                <button @click="() => sendDialog.close()" class="px-5 py-1.5 hover:bg-slate-500 rounded  bg-slate-700 text-white hover:bg-slate-500">
                     Cancel
                 </button>
-                <button @click="sendTicket" :class="BTN">
+                <button @click="sendTicket" class="btn-primary">
                     Send
                 </button>
             </div>
@@ -118,10 +118,9 @@ import { toast } from 'vue3-toastify'
 import { validateAddress, char2Bytes, bytes2Char } from '@taquito/utils'
 // import { TicketTokenParams } from '@taquito/rpc'
 
-const TRUSTED = ['tezmap', 'tzrc-20:tezi']
+const TRUSTED = ['tezmap', 'tzrc-20:tezi', 'tzrc-20b:test']
 const DEPRECATED = ['tezmaps']
 
-const BTN = import.meta.env.VITE_BTN_CLASS
 const TICKETER = import.meta.env.VITE_TICKETER
 const PROXY = import.meta.env.VITE_PROXY_CONTRACT
 
