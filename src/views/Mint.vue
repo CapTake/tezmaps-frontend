@@ -28,8 +28,8 @@ const DECI = 1
 const LIMI = 3
 const MINTEDI = 5
 const MAXI = 4
-const NBFI = 2
-const EXPI = 6
+const NBFI = 6
+const EXPI = 2
 
 const props = defineProps({protocol:String, tick:String})
 
