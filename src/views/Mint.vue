@@ -2,16 +2,17 @@
     <div class="mx-auto w-full max-w-6xl py-12 text-center px-4">
         <h1 class="text-4xl lg:text-5xl font-light mb-8 tracking-wider">{{ props.tick.toUpperCase() }}</h1>
         <p class="md:text-lg mb-12 text-slate-500">Tezos inscriptions tzrc-20 token experiment</p>
-        <h2 class="text-2xl mb-10">Total supply: {{ supply }}</h2>
-        <h3 v-if="protocol == 'tzrc-20b'" class="text mb-1 text-slate-500">Inscription Cooldown: {{ cd }}</h3>
+        <h2 class="text-2xl mb-10">Total supply: {{ supply.toFormat() }}</h2>
+        <h3 v-if="protocol == 'tzrc-20b' && cd.gt(0)" class="text mb-1 text-slate-500">Cooldown period: {{ cd.toFormat() }} blocks</h3>
         <div class="flex justify-center gap-1 items-center px-1 mb-8">
             <progress max="100" :value="percentMinted" class="max-w-full h-8 bg-darkblue text-main rounded-sm w-[500px] transition-all"></progress>
             <span>{{ percentMinted }}%</span>
         </div>
-        <div v-if="nbf" class="text-slate-500">Mint Start: {{ nbf }}</div>
-        <div v-if="exp" class="text-slate-500">Mint End: {{ exp }}</div>
+        <div v-if="mintStart" class="text-slate-500">Mint Start: {{ mintStart }}</div>
+        <div v-if="mintEnd" class="text-slate-500">Mint End: {{ mintEnd }}</div>
         <p class="text-sm h-10 text-slate-500">{{ operation }}</p>
-        <button v-if="minted < supply" @click="mint" :class="BTN">Inscribe {{ limit }} {{ props.tick.toUpperCase() }}</button><button v-else :class="BTN">Mint concluded</button>
+        <button v-if="canMint" @click="mint" :class="BTN">Inscribe {{ limit }} {{ props.tick.toUpperCase() }}</button>
+        <button v-else :class="BTN">{{ mintStatusLabel }}</button>
     </div>
 </template>
 
@@ -21,6 +22,14 @@ import { toast } from 'vue3-toastify'
 import { prepareOperation, decodeBytes } from '../util/tzrc-20'
 import BigNumber from 'bignumber.js'
 import api from '../util/api'
+
+const CDI = 0
+const DECI = 1
+const LIMI = 3
+const MINTEDI = 5
+const MAXI = 4
+const NBFI = 2
+const EXPI = 6
 
 const props = defineProps({protocol:String, tick:String})
 
@@ -45,7 +54,23 @@ const account = inject('walletConnection')
 const contractAt = inject('contract')
 const connect = inject('connectWallet')
 
-const percentMinted = computed(() => (new BigNumber(minted.value).toFixed() / new BigNumber(supply.value).toFixed() * 100).toFixed(2))
+const canMint = computed(() => minted.value.lt(supply.value))
+const mintStart = computed(() => nbf.value.getTime() > 0 ? nbf.value.toLocaleString() : false)
+const mintEnd = computed(() => exp.value.getTime() > 0 ? exp.value.toLocaleString() : false)
+
+const mintStatusLabel = computed(() => {
+    const now = Date.now()
+    if (now < nbf.value.getTime()) {
+        return 'Waiting for the start'
+    } else if (supply.value.lte(minted.value)) {
+        return 'Max supply reached'
+    } else if (now > exp.value.getTime()) {
+        return 'Timeout reached'
+    }
+    return '????'
+})
+
+const percentMinted = computed(() => minted.value.dividedBy(supply.value).multipliedBy(100).toFixed(2))
 const isConnected = computed(() => !!account.address)
 
 const inscribe = async (protocol, claim) => {
@@ -81,9 +106,9 @@ const inscribe = async (protocol, claim) => {
 }
 
 const mint = async () => {
-        const { bytes } = prepareOperation({ op: 'mint', tick: 'test', amt: 42069 })
-        console.log(bytes)
-        await inscribe('tzrc-20b', bytes)
+    const { bytes } = prepareOperation({ op: 'mint', tick: 'test', amt: 42069 })
+    console.log(bytes)
+    await inscribe('tzrc-20b', bytes)
 }
 
 const deployToken = async () => {
@@ -104,25 +129,27 @@ const load = async () => {
 
         console.log(data)
 
-        cd.value = new BigNumber(data[0]).toFixed()
-        decimals.value = new BigNumber(data[1]).toFixed()
-        limit.value = new BigNumber(data[3]).toFixed()
-        minted.value = new BigNumber(data[5]).toFixed()
-        supply.value = new BigNumber(data[4]).toFixed()
-        nbf.value = data[2] === 0 ? 0 : new Date(data[2]*1000).toISOString().slice(0,16)
-        exp.value = data[6] === 0 ? 0 : new Date(data[6]*1000).toISOString().slice(0,16)
+        cd.value = new BigNumber(data[CDI])
+        decimals.value = new BigNumber(data[DECI] || 0)
+        limit.value = new BigNumber(data[LIMI])
+        minted.value = new BigNumber(data[MINTEDI])
+        supply.value = new BigNumber(data[MAXI])
+        nbf.value = data[NBFI] === 0 ? 0 : new Date(data[NBFI]*1000)
+        exp.value = data[EXPI] === 0 ? 0 : new Date(data[EXPI]*1000)
 
         // API Query
         const subscribe = !recordId.value
         const { id, total_supply } = await api.collection('protocol_tickets').getFirstListItem("p='"+props.protocol+":"+props.tick+"'")
         recordId.value = id
-         minted.value = new BigNumber(total_supply).dividedBy(new BigNumber(1_000)).toNumber()
+
+        minted.value = new BigNumber(total_supply)
+
         if (subscribe) {
             console.log('subscription')
             await api.collection('protocol_tickets').subscribe(id, (message) => {
                 const { record: { total_supply } } = message
                 console.log(message, total_supply)
-                minted.value = new BigNumber(total_supply).dividedBy(new BigNumber(1_000_000)).toNumber()
+                minted.value = new BigNumber(total_supply).dividedBy(new BigNumber(10).pow(decimals.value))
             }).catch(e => {
                 console.log(e)
             })
