@@ -106,9 +106,9 @@ const inscribe = async (protocol, claim) => {
 }
 
 const mint = async () => {
-    const { bytes } = prepareOperation({ op: 'mint', tick: 'test', amt: 42069 })
+    const { bytes } = prepareOperation({ op: 'mint', tick: props.tick, amt: limit.value.toFixed() })
     console.log(bytes)
-    await inscribe('tzrc-20b', bytes)
+    await inscribe(props.protocol, bytes)
 }
 
 const deployToken = async () => {
