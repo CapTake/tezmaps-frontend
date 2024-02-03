@@ -46,7 +46,7 @@
                                     minlength="4" maxlength="6"
                                     required
                                     />
-                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">The Token Ticker Name. Must be between 4 and 6 characters</p>
+                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Ticker name must be between 4 and 6 characters</p>
                                 </label>
                                 <label class="block">
                                     <span class="text-slate-500">Supply*</span>
@@ -57,7 +57,7 @@
                                     minlength="1"
                                     required
                                     />
-                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">The token supply. Claim tokens until total supply is reached</p> 
+                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Claim tokens until this maximum supply is reached</p> 
                                 </label>
                                 <label class="block">
                                     <span class="text-slate-500">Claim Amount*</span>
