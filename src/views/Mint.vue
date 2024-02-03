@@ -3,7 +3,7 @@
         <h1 class="text-4xl lg:text-5xl font-light mb-8 tracking-wider">{{ props.tick.toUpperCase() }}</h1>
         <p class="md:text-lg mb-12 text-slate-500">Tezos inscriptions tzrc-20 token experiment</p>
         <h2 class="text-2xl mb-10">Total supply: {{ supply.toFormat() }}</h2>
-        <h3 v-if="protocol == 'tzrc-20b' && cd.gt(0)" class="text mb-1 text-slate-500">Cooldown period: {{ cd.toFormat() }} blocks</h3>
+        <h3 v-if="protocol == 'tzrc-20b' && cd.gt(0)" class="text mb-1 text-slate-500">Cooldown period: {{ cd }} blocks</h3>
         <div class="flex justify-center gap-1 items-center px-1 mb-8">
             <progress max="100" :value="percentMinted" class="max-w-full h-8 bg-darkblue text-main rounded-sm w-[500px] transition-all"></progress>
             <span>{{ percentMinted }}%</span>
@@ -42,12 +42,13 @@ const operation = ref('')
 const recordId = ref(null)
 
 const supply = ref(new BigNumber(1))
-const cd = ref(new BigNumber(0))
-const limit = ref(new BigNumber(0))
-const decimals = ref(new BigNumber(0))
 const nbf = ref(new BigNumber(0))
 const exp = ref(new BigNumber(0))
+const cd = ref(0)
+const limit = ref(new BigNumber(0))
+const decimals = ref(0)
 const minted = ref(new BigNumber(0))
+
 
 const account = inject('walletConnection')
 const contractAt = inject('contract')
