@@ -142,7 +142,7 @@ const load = async () => {
         const { id, total_supply } = await api.collection('protocol_tickets').getFirstListItem("p='"+props.protocol+":"+props.tick+"'")
         recordId.value = id
 
-        minted.value = new BigNumber(total_supply)
+        minted.value = new BigNumber(total_supply).dividedBy(new BigNumber(10).pow(decimals.value))
 
         if (subscribe) {
             console.log('subscription')
