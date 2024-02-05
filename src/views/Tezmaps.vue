@@ -1,5 +1,5 @@
 <template>
-    <div class="mx-auto w-full text-center p-0">
+    <div class="mx-auto w-full text-center p-0 pt-3 pb-3">
         <BlockMap :width="width" :height="height/2" :offset="offset" :limit="5000" :row-width="100" @selected="showPopup" class="mx-4">
         </BlockMap>
         <div class="w-full px-5">
@@ -9,7 +9,7 @@
             <div class="text-xs text-slate-500 pt-0.5 pb-3">Choose only 5,000 Steps</div>
             <input v-model.number="firstBlock" type="range" :min="0" :max="lastBlock" :step="5000" @change="(e) => {offset = +e.target.value}" @input="(e) => console.log(e.target.value, offset)" class="w-full accent-slate-400"> 
             <h3 class="pt-6 dark:text-slate-300">Tezmaps is the first Tezoscription. Each Tezos Block is represented by a uniquely claimable Tezmap.</h3>
-            <h3 class="pt-6 dark:text-slate-500">Tezoscriptions aren't yet supported by wallets. Track yours at <router-link to="/balance" class="transition-all underline hover:text-blue-500">Holdings</router-link>.</h3>
+            <h3 class="pt-6 dark:text-slate-500">Track your claims <router-link to="/balance" class="transition-all underline hover:text-blue-500">here</router-link> until Tezoscriptions get wallet support.</h3>
         </div>
     </div>
     <div class="fixed w-full h-0 bottom-0 z-50">

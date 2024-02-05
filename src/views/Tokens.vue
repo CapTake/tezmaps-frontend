@@ -17,17 +17,21 @@
             </div>
             Loading...
         </div>
-        <div v-else class="w-full grid grid-cols-1 gap-2 xl:gap-4 mb-8">
+        <div v-else class="w-full grid grid-cols-1 gap-2 xl:gap-3 mb-8">
             <div v-for="item in tokens" :key="item.id" class="uppercase border border-slate-300 rounded-lg shadow hover:shadow-lg p-4 md:p-5 bg-white dark:bg-darkgrey dark:border-lightgrey dark:hover:border-slate-600 relative tracking-tight">
                 <router-link :to="{ name: 'mint', params: { protocol: item.protocol, tick: item.ticker }}">
                 <div class="text-md flex align-middle">
                     <div class="w-[80px] pe-3">
                         <span class="lowercase tracking-wider inline-block whitespace-nowrap rounded-[0.27rem] px-[0.65em] pb-[0.25em] pt-[0.35em] text-center align-baseline text-[0.60em] font-bold leading-none text-neutral-50 bg-lightblue">{{ item.protocol }}</span> 
                      </div>
-                     <div class="w-[75px] align-middle inline-block pt-[3px]">
-                         {{ item.ticker }} 
+                     <div class="w-[85px] align-middle inline-block pt-[3px]">
+                        <svg v-if="item.trusted" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-green-300 inline me-1" style="margin-top:-4px">
+                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="">{{ item.ticker }} </span>
+
                       </div>
-                      <div class="w-[350px] pe-3">
+                      <div class="w-[350px] pe-3 pt-[0.5px]">
                             <progress max="100" :value="item.percentMinted" class="h-2 rounded-sm w-1/2 max-w-[125px] transition-all"></progress><span class="text-xs">{{ item.percentMinted }}%</span>
                       </div>
                       <div class="ml-auto">
@@ -44,11 +48,8 @@
 import { ref, watchEffect, computed } from 'vue'
 import { decodeBytes } from '../util/tzrc-20'
 import BigNumber from 'bignumber.js'
+import { TRUSTED, DEPRECATED } from '../util/api'
 
-const TRUSTED = ['tezmap', 'tzrc-20:tezi', 'tzrc-20b:test',] 
-const DEPRECATED = ['tezmaps']
-
-const BTN = import.meta.env.VITE_BTN_CLASS
 
 const loading = ref(false)
 
@@ -64,8 +65,13 @@ const tokens = ref([])
 
 const loadData = async () => {
     try {
+
+        loading.value = true
+
         const response = await fetch('https://api.tzkt.io/v1/contracts/KT1UURhEJPhvqp4xgF4C9ZVddJ8Qd34hHXtZ/bigmaps/state/keys?active=true&select=key,value&key.as=tzrc-20*');
         const block = await response.json()
+
+        console.log(block)
 
         tokens.value = (block || []).map(({key, value}) => {
 
@@ -85,6 +91,8 @@ const loadData = async () => {
 
             return {
                 protocol,
+                trusted: TRUSTED.includes(key),
+                deprecated: DEPRECATED.includes(key),
                 ticker,
                 cd: cd.value,
                 decimals: decimals.value,
@@ -95,9 +103,9 @@ const loadData = async () => {
                 exp: exp.value,
                 percentMinted, percentMinted
             }
-
+        
         })
-
+        
         loading.value = true
         console.log(tokens.value)
 

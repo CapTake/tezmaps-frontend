@@ -12,7 +12,6 @@
             </router-link>
             <router-link to="/tokens" class="transition-all hover:text-blue-500">Tokens</router-link>
             <router-link to="/create" class="transition-all hover:text-blue-500">Inscribe</router-link>
-            <!--<router-link :to="{ name: 'mint', params: { protocol: 'tzrc-20', tick: 'tezi' }}" class="transition-all hover:text-blue-500">Mint</router-link>-->
             <router-link to="/trade" class="transition-all hover:text-blue-500">Market</router-link>
             <router-link to="/docs" class="transition-all hover:text-blue-500">Docs</router-link>
         </div>
