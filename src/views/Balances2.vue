@@ -90,7 +90,7 @@
                     </svg>
                 </button>
             </h3>
-            <div v-if="selection" class="my-6 text-center font-mono">
+            <div v-if="selection" class="my-6 text-center">
                 {{ selection.content }}
             </div>
             <label class="my-6 text-center flex gap-2 justify-between items-center border  p-2 rounded whitespace-nowrap" :class="{'border-slate-300': !destError, 'border-red-400': destError}">
@@ -111,15 +111,13 @@
 
 <script setup>
 import { inject, ref, watchEffect, computed } from 'vue'
-import api from '../util/api'
+import { api, TRUSTED, DEPRECATED } from '../util/api'
 import { ticketParams } from '../util/ticket'
 import BigNumber from 'bignumber.js'
 import { toast } from 'vue3-toastify'
 import { validateAddress, char2Bytes, bytes2Char } from '@taquito/utils'
 // import { TicketTokenParams } from '@taquito/rpc'
 
-const TRUSTED = ['tezmap', 'tzrc-20:tezi', 'tzrc-20b:test']
-const DEPRECATED = ['tezmaps']
 
 const TICKETER = import.meta.env.VITE_TICKETER
 const PROXY = import.meta.env.VITE_PROXY_CONTRACT

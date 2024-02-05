@@ -1,17 +1,18 @@
 <template>
     <div class="mx-auto w-full max-w-6xl py-12 text-center px-4">
+        <span class="lowercase tracking-wider inline-block whitespace-nowrap rounded-[0.27rem] px-[0.65em] pb-[0.25em] pt-[0.35em] text-center align-baseline text-[0.60em] font-bold leading-none text-neutral-50 bg-lightblue">{{ props.protocol }}</span> 
         <h1 class="text-4xl lg:text-5xl font-light mb-8 tracking-wider">{{ props.tick.toUpperCase() }}</h1>
-        <p class="md:text-lg mb-12 text-slate-500">Tezos inscriptions tzrc-20 token experiment</p>
-        <h2 class="text-2xl mb-10">Total supply: {{ supply.toFormat() }}</h2>
-        <h3 v-if="protocol == 'tzrc-20b' && cd.gt(0)" class="text mb-1 text-slate-500">Cooldown period: {{ cd.toFixed() }} blocks</h3>
-        <div class="flex justify-center gap-1 items-center px-1 mb-8">
+        <p v-if="props.tick === 'tezi'" class="md:text-lg mt-6 mb-6 text-slate-500">Tezos inscriptions tzrc-20 token experiment</p>
+        <h2 class="text-2xl mb-8">Total supply: {{ supply.toFormat() }}</h2>
+        <div v-if="mintStart" class="text-slate-500">Mint Start: {{ mintStart }}</div>
+        <div v-if="mintEnd" class="text-slate-500">Mint End: {{ mintEnd }}</div>
+        <h3 v-if="protocol == 'tzrc-20b' && cd.gt(0)" class="text mt-4 mb-1 text-slate-500">Cooldown period: {{ cd.toFixed() }} blocks</h3>
+        <div class="flex justify-center gap-1 items-center px-1">
             <progress max="100" :value="percentMinted" class="max-w-full h-8 bg-darkblue text-main rounded-sm w-[500px] transition-all"></progress>
             <span>{{ percentMinted }}%</span>
         </div>
-        <div v-if="mintStart" class="text-slate-500">Mint Start: {{ mintStart }}</div>
-        <div v-if="mintEnd" class="text-slate-500">Mint End: {{ mintEnd }}</div>
-        <p class="text-sm h-10 text-slate-500 mt-4">{{ operation }}</p>
-        <button v-if="canMint" @click="mint" class="btn-primary">Claim {{ limit }} {{ props.tick.toUpperCase() }}</button>
+        <p class="transition-all text-sm h-10 text-slate-500 mt-4">{{ operation }}</p>
+        <button v-if="canMint" @click="mint" class="btn-primary shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-950/90">Claim {{ limit }} {{ props.tick.toUpperCase() }}</button>
         <button v-else class="btn-primary">{{ mintStatusLabel }}</button>
     </div>
 </template>
@@ -21,7 +22,7 @@ import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue'
 import { toast } from 'vue3-toastify'
 import { prepareOperation, decodeBytes } from '../util/tzrc-20'
 import BigNumber from 'bignumber.js'
-import api from '../util/api'
+import { api } from '../util/api'
 
 const CDI = 0
 const DECI = 1

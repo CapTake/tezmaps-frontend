@@ -12,19 +12,20 @@
   /* Firefox */
   * {
     scrollbar-width: auto;
-    scrollbar-color: #141414 #cbd5e1;
+    scrollbar-color: #cbd5e1 #141414;
   }
 
   /* Chrome, Edge, and Safari */
   *::-webkit-scrollbar {
-    width: 16px;
+    width: 10px;
   }
 
   *::-webkit-scrollbar-track {
-    background: #cbd5e1;
+    background-color: #141414;
+    
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: #141414;
-    border: 0px solid #131313;
+    background: #cbd5e1;
+    border: 0px;
   }

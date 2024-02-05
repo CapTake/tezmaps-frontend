@@ -17,7 +17,7 @@
 <script setup>
 import { onMounted, watchEffect, ref, computed, reactive, nextTick } from 'vue';
 import { watchDebounced } from '@vueuse/core'
-import api from '../util/api'
+import { api } from '../util/api'
 import axios from 'axios'
 import Konva from 'konva'
 
@@ -260,6 +260,7 @@ const onTouchEnd = () => {
 }
 
 const OCCUPIED_COLOR = '#2F59ED'
+const OWNED_COLOR = '#62cb3b'
 
 const init = () => {
 
@@ -293,6 +294,8 @@ const init = () => {
         const height = blockSize - 1
 
         const fill = occupied === 0 ? '#a0a0a0' : OCCUPIED_COLOR
+
+        if (occupied === 2) { fill = OWNED_COLOR }
 
         const text = new Konva.Text({
             x,

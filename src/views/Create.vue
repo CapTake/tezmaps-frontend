@@ -25,7 +25,12 @@
                 <div class="px-4 py-5 flex-auto">
                 <div class="tab-content tab-space">
                     <div v-bind:class="{'hidden': openTab !== 1, 'block': openTab === 1}">
-                        <p class="md:text-md text-slate-500 dark:text-slate-300 mb-6">Deploy your own tzrc-20 token</p>
+                        <p class="md:text-md text-slate-500 dark:text-slate-300 mb-6">Deploy your own tzrc-20 token</p>           
+                        <p class="md:text-sm text-slate-500 dark:text-slate-600 mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 inline"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>
+                            Deploying will trigger one token claim to your wallet. The rest is claimable by the public. To disable public claims, set the <u>Claim Amount</u> to the <u>Max Supply</u> to claim all tokens at deploying.
+                        </p>
+
                         <form @submit.prevent="onSubmit">
                             <div class="flex justify-center">
                                 <div class="grid grid-cols-1 gap-5 text-left text-black flex justify-center ">
@@ -35,29 +40,29 @@
                                     <option value="tzrc-20">TZRC-20</option>
                                     <option value="tzrc-20b">TZRC-20B (recommended)</option>
                                 </select>
-                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">tzrc-20b offers a fair distribution with a claim cooldown</p>
+                                <p id="helper-text-explanation" class="mt-1.5 text-sm text-gray-500 dark:text-gray-500">tzrc-20b offers a fair distribution with claim cooldown</p>
                                 </label>
                                 <label class="block">
                                     <span class="text-slate-500">Ticker*</span>
                                     <input v-model="ticker"
-                                    type="text"
+                                    type="text" title="Four to six character ticker (letters & numbers)"
                                     class="uppercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     placeholder="tezi"
-                                    minlength="4" maxlength="6"
+                                    minlength="4" maxlength="6" pattern="[A-Za-z0-9-]{4,6}"
                                     required
                                     />
-                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">The Token Ticker Name. Must be between 4 and 6 characters</p>
+                                <p id="helper-text-explanation" class="mt-1.5 text-sm text-gray-500 dark:text-gray-500">Ticker name must be between 4 and 6 characters</p>
                                 </label>
                                 <label class="block">
-                                    <span class="text-slate-500">Supply*</span>
+                                    <span class="text-slate-500">Max Supply*</span>
                                     <input v-model="supply"
-                                    type="text"
+                                    type="text" title="Supply is 1 or higher & max the claim amount"
                                     class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     placeholder="21,000,000"
                                     minlength="1"
                                     required
                                     />
-                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">The token supply. Claim tokens until total supply is reached</p> 
+                                <p id="helper-text-explanation" class="mt-1.5 text-sm text-gray-500 dark:text-gray-500">Number of claimable tokens until max supply is reached</p> 
                                 </label>
                                 <label class="block">
                                     <span class="text-slate-500">Claim Amount*</span>
@@ -68,7 +73,7 @@
                                     min="1" :max="supply"
                                     required
                                     />
-                                    <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Amount of tokens a wallet can mint each claim</p>
+                                    <p id="helper-text-explanation" class="mt-1.5 text-sm text-gray-500 dark:text-gray-500">Amount of tokens a wallet can mint each claim</p>
                                 </label>
                                 <label class="block">
                                     <span class="text-slate-500">Decimals*</span>
@@ -79,7 +84,7 @@
                                     min="0" max="18"
                                     required
                                     />
-                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Technical parameter for token decimals. Tez has 6 decimals</p>
+                                <p id="helper-text-explanation" class="mt-1.5 text-sm text-gray-500 dark:text-gray-500">Amount of decimals (0-18) token can have. Tez has 6</p>
                                 </label>
                                 <label v-show="protocol == 'tzrc-20b'" class="block">
                                     <span class="text-slate-500">Claim Cooldown*</span>
@@ -89,7 +94,7 @@
                                     placeholder="1"
                                     min="1" step="1"
                                     />
-                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Amount of cooldown time in blocks between token claims</p>
+                                <p id="helper-text-explanation" class="mt-1.5 text-sm text-gray-500 dark:text-gray-500">Amount of cooldown time in blocks (15s) to claim tokens</p>
                                 </label>
                                 <label class="block" v-show="protocol == 'tzrc-20b'">
                                     <span class="text-slate-500">Start Date</span>
@@ -97,7 +102,7 @@
                                     type="datetime-local"
                                     class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Leave empty for mint starting without delay</p>
+                                <p id="helper-text-explanation" class="mt-1.5 text-sm text-gray-500 dark:text-gray-500">Leave empty for mint starting without delay</p>
                                 </label>
                                 <label class="block" v-show="protocol == 'tzrc-20b'">
                                     <span class="text-slate-500">End Date</span>
@@ -105,11 +110,12 @@
                                     type="datetime-local"
                                     class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     />
-                                <p id="helper-text-explanation" class="mt-2 text-sm text-gray-500 dark:text-gray-500">Leave empty for open end mint</p>
+                                <p id="helper-text-explanation" class="mt-1.5 text-sm text-gray-500 dark:text-gray-500">Leave empty for open end mint</p>
                                 </label>
                                 </div>
                             </div>
-                            <p class="text-sm h-10 text-slate-500">{{ operation }}</p>
+
+                            <p class="text-sm h-8 text-slate-500 mt-4">{{ operation }}</p>
                             <button type="submit" class="btn-primary">Inscribe Token</button>
                         </form>
                     </div>
