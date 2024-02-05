@@ -15,6 +15,9 @@
         <button v-if="canMint" @click="mint" class="btn-primary shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-950/90">Claim {{ limit }} {{ props.tick.toUpperCase() }}</button>
         <button v-else class="btn-primary">{{ mintStatusLabel }}</button>
     </div>
+    <div v-if="holders.length > 0">
+        {{holders}}
+    </div>
 </template>
 
 <script setup>
@@ -51,6 +54,9 @@ const decimals = ref(0)
 const minted = ref(new BigNumber(0))
 
 const holders = ref([])
+const holdersPage = ref(1)
+const holdersTotalPages = ref(1)
+const holdersPerPage = ref(20)
 
 const account = inject('walletConnection')
 const contractAt = inject('contract')
@@ -122,8 +128,12 @@ const deployToken = async () => {
 }
 
 const getHolders = async () => {
-    const response = await api.collection('balance_view').getList(1, 20, { filter: `p="${tokenKey.value}"`, sort: '-balance', fields: 'balance,holder,updated' });
-    console.log(response)
+    const { items, page, perPage, totalItems, totalPages } = await api.collection('balance_view').getList(holdersPage.value, holdersPerPage.value, { filter: `p="${tokenKey.value}"`, sort: '-balance', fields: 'balance,holder,updated' });
+    holders.value = items.map(({ balance, holder, updated }) => ({
+        balance: new BigNumber(balance).dividedBy(new BigNumber(10).pow(decimals.value)).toFormat(),
+        address: holder,
+        updated: new Date(updated)
+    }))
 }
 
 const load = async () => {
