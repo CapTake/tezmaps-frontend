@@ -50,10 +50,13 @@ const limit = ref(new BigNumber(0))
 const decimals = ref(0)
 const minted = ref(new BigNumber(0))
 
+const holders = ref([])
 
 const account = inject('walletConnection')
 const contractAt = inject('contract')
 // const connect = inject('connectWallet')
+
+const tokenKey = computed(() => `${props.protocol}${props.tick ? ':':''}${props.tick || ''}`)
 
 const canMint = computed(() => minted.value.lt(supply.value))
 const mintStart = computed(() => nbf.value > 0 ? new Date(nbf.value * 1000).toLocaleString() : false)
@@ -118,10 +121,15 @@ const deployToken = async () => {
     await inscribe(PROTOCOL, bytes)
 }
 
+const getHolders = async () => {
+    const response = await api.collection('balance_view').getList(1, 20, { filter: `p="${tokenKey.value}"`, sort: '-balance', fields: 'balance,holder,updated' });
+    console.log(response)
+}
+
 const load = async () => {
     try {
         // TZKT Query
-        const response = await fetch("https://api.tzkt.io/v1/contracts/KT1UURhEJPhvqp4xgF4C9ZVddJ8Qd34hHXtZ/bigmaps/state/keys?active=true&select=key,value&key=%22"+props.protocol+":"+props.tick+"%22");
+        const response = await fetch("https://api.tzkt.io/v1/contracts/KT1UURhEJPhvqp4xgF4C9ZVddJ8Qd34hHXtZ/bigmaps/state/keys?active=true&select=key,value&key=%22"+tokenKey.value+"%22");
         const block = await response.json()
 
         console.log(block)
@@ -154,7 +162,8 @@ const load = async () => {
             }).catch(e => {
                 console.log(e)
             })
-        } 
+        }
+        await getHolders()
     } catch (e) {
         console.log(e)
     }
