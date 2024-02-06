@@ -1,6 +1,6 @@
 <template>
     <div class="w-full min-h-screen reative px-5 ">
-        <h1 class="mt-10 mb-6 tezt text-xl">Your Holdings</h1>
+        <h1 class="mt-10 mb-6 tezt text-xl"><span v-if="props.wallet !== account.address">{{ props.wallet }}</span> Holdings</h1>
         <div v-if="loading" class="inset-0 flex justify-center items-center pointer-events-none">
             <div class="flex justify-center items-center max-w-[300px] rounded-lg py-20 px-16 shadow-lg">
                 <svg aria-hidden="true" class="w-12 h-12 text-slate-400 animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -118,11 +118,14 @@ import { toast } from 'vue3-toastify'
 import { validateAddress, char2Bytes, bytes2Char } from '@taquito/utils'
 // import { TicketTokenParams } from '@taquito/rpc'
 
+const props = defineProps({wallet:String})
 
 const TICKETER = import.meta.env.VITE_TICKETER
 const PROXY = import.meta.env.VITE_PROXY_CONTRACT
 
 const account = inject('walletConnection')
+console.log(`holder = "${props.wallet || ''}"`)
+
 const BALANCE_VIEW = 'balance_view'
 
 const loading = ref(false)
@@ -133,7 +136,7 @@ const items = ref([])
 const page = ref(1)
 const perPage = ref(25)
 const totalPages = ref(1)
-const filter = computed(() => `holder = "${account.address || ''}"`)
+const filter = computed(() => `holder = "${props.wallet || ''}"`)
 const paging = computed(() => {
     const current = page.value
     const last = totalPages.value
@@ -163,7 +166,7 @@ const sendAmount = ref(1)
 
 const goToPage = (n) => {
     page.value = n
-    lastBlock()
+    // lastBlock()
     loadData()
 }
 

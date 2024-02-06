@@ -22,7 +22,7 @@
                 <router-link :to="{ name: 'mint', params: { protocol: item.protocol, tick: item.ticker }}">
                 <div class="text-md flex align-middle">
                     <div class="w-[80px] pe-3">
-                        <span class="lowercase tracking-wider inline-block whitespace-nowrap rounded-[0.27rem] px-[0.65em] pb-[0.25em] pt-[0.35em] text-center align-baseline text-[0.60em] font-bold leading-none text-neutral-50 bg-lightblue">{{ item.protocol }}</span> 
+                        <span class="lowercase tracking-wider inline-block whitespace-nowrap rounded-[0.27rem] px-[0.65em] pb-[0.25em] pt-[0.35em] text-center align-baseline text-[0.60em] font-bold leading-none text-neutral-50" :class="item.protocol === 'tzrc-20' ? 'bg-slate-700' :  'bg-lightblue'">{{ item.protocol }}</span> 
                      </div>
                      <div class="w-[85px] align-middle inline-block pt-[3px]">
                         <svg v-if="item.trusted" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-green-300 inline me-1" style="margin-top:-4px">

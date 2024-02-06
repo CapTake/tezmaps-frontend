@@ -1,6 +1,6 @@
 <template>
     <div class="mx-auto w-full max-w-6xl py-12 text-center px-4">
-        <span class="lowercase tracking-wider inline-block whitespace-nowrap rounded-[0.27rem] px-[0.65em] pb-[0.25em] pt-[0.35em] text-center align-baseline text-[0.60em] font-bold leading-none text-neutral-50 bg-lightblue">{{ props.protocol }}</span> 
+        <span class="lowercase tracking-wider inline-block whitespace-nowrap rounded-[0.27rem] px-[0.65em] pb-[0.25em] pt-[0.35em] text-center align-baseline text-[0.60em] font-bold leading-none text-neutral-50" :class="props.protocol === 'tzrc-20' ? 'bg-slate-700' :  'bg-lightblue'">{{ props.protocol }}</span> 
         <h1 class="text-4xl lg:text-5xl font-light mb-8 tracking-wider">{{ props.tick.toUpperCase() }}</h1>
         <p v-if="props.tick === 'tezi'" class="md:text-lg mt-6 mb-6 text-slate-500">Tezos inscriptions tzrc-20 token experiment</p>
         <h2 class="text-2xl mb-8">Total supply: {{ supply.toFormat() }}</h2>
@@ -14,9 +14,14 @@
         <p class="transition-all text-sm h-10 text-slate-500 mt-4">{{ operation }}</p>
         <button v-if="canMint" @click="mint" class="btn-primary shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-950/90">Claim {{ limit }} {{ props.tick.toUpperCase() }}</button>
         <button v-else class="btn-primary">{{ mintStatusLabel }}</button>
-    </div>
-    <div v-if="holders.length > 0">
-        {{holders}}
+
+        <div v-if="holders.length > 0" class="mt-12">
+            <h3 class="text-xl mb-1">Top Holders ({{holders.length}})</h3>
+            <div class="text-slate-500 text-sm" v-for="(item, index) in holders" :key="item.id">
+                #{{ (index + 1) }} <router-link :to="{ name: 'user', params: { wallet: item.address }}" class="align-middle inline-block">
+ {{ item.address.slice(0,4) }}<span class="hidden md:inline">{{ item.address.slice(4,32) }}</span><span class="md:hidden">..</span>{{ item.address.slice(-4) }}</router-link> {{item.balance}}
+            </div>
+        </div>
     </div>
 </template>
 
@@ -56,7 +61,7 @@ const minted = ref(new BigNumber(0))
 const holders = ref([])
 const holdersPage = ref(1)
 const holdersTotalPages = ref(1)
-const holdersPerPage = ref(20)
+const holdersPerPage = ref(50)
 
 const account = inject('walletConnection')
 const contractAt = inject('contract')
@@ -67,6 +72,8 @@ const tokenKey = computed(() => `${props.protocol}${props.tick ? ':':''}${props.
 const canMint = computed(() => minted.value.lt(supply.value))
 const mintStart = computed(() => nbf.value > 0 ? new Date(nbf.value * 1000).toLocaleString() : false)
 const mintEnd = computed(() => exp.value > 0 ? new Date(exp.value * 1000).toLocaleString() : false)
+
+const shortenWallet  = (wallet) => { return wallet.slice(0,4) + '<span class="md-inline">..</span>' + wallet.slice(-4) }
 
 const mintStatusLabel = computed(() => {
     const now = Date.now() / 1000
