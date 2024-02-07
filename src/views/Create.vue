@@ -45,10 +45,10 @@
                                 <label class="block">
                                     <span class="text-slate-500">Ticker*</span>
                                     <input v-model="ticker"
-                                    type="text" title="Four to six character ticker (letters & numbers)"
-                                    class="uppercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                                    type="text" title="Four to six lowercase character ticker (letters & numbers)"
+                                    class="lowercase mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                                     placeholder="tezi"
-                                    minlength="4" maxlength="6" pattern="[A-Za-z0-9-]{4,6}"
+                                    minlength="4" maxlength="6" pattern="[A-Za-z0-9]{4,6}"
                                     required
                                     />
                                 <p id="helper-text-explanation" class="mt-1.5 text-sm text-gray-500 dark:text-gray-500">Ticker name must be between 4 and 6 characters</p>
@@ -169,7 +169,7 @@ const endDate = ref('')
 const onSubmit = async () => {
     const { bytes } = prepareOperation({ 
         op: 'deploy', 
-        tick: ticker.value, 
+        tick: ticker.value.toLowerCase(), 
         max: new BigNumber(supply.value).toFixed(),
         lim: new BigNumber(maxClaim.value).toFixed(),
         cd: protocol.value === 'tzrc-20' ? 0 : new BigNumber(cooldown.value).toFixed(), 
