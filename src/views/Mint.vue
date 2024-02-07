@@ -16,8 +16,8 @@
         <button v-else class="btn-primary">{{ mintStatusLabel }}</button>
 
         <div v-if="holders.length > 0" class="mt-12">
-            <h3 class="text-xl mb-1">Top Holders ({{holders.length}})</h3>
-            <div class="text-slate-500 text-sm" v-for="(item, index) in holders" :key="item.id">
+            <h3 class="text-xl mb-1">Top Holders<span class="text-slate-500 text-sm ps-1">({{holders.length}} total)</span></h3>
+            <div class="text-slate-500 text-sm" v-for="(item, index) in holders.slice(0,50)" :key="item.id">
                 #{{ (index + 1) }} <router-link :to="{ name: 'user', params: { wallet: item.address }}" class="align-middle inline-block">
  {{ item.address.slice(0,4) }}<span class="hidden md:inline">{{ item.address.slice(4,32) }}</span><span class="md:hidden">..</span>{{ item.address.slice(-4) }}</router-link> {{item.balance}}
             </div>
@@ -61,7 +61,7 @@ const minted = ref(new BigNumber(0))
 const holders = ref([])
 const holdersPage = ref(1)
 const holdersTotalPages = ref(1)
-const holdersPerPage = ref(50)
+const holdersPerPage = ref(500)
 
 const account = inject('walletConnection')
 const contractAt = inject('contract')
