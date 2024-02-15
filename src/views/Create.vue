@@ -31,7 +31,7 @@
                             Deploying will trigger one token claim to your wallet. The rest is claimable by the public. To disable public claims, set the <u>Claim Amount</u> to the <u>Max Supply</u> to claim all tokens at deploying.
                         </p>
 
-                        <form @submit.prevent="onSubmit">
+                        <form> <!--  @submit.prevent="onSubmit"-->
                             <div class="flex justify-center">
                                 <div class="grid grid-cols-1 gap-5 text-left text-black flex justify-center ">
                                 <label class="block">
@@ -56,9 +56,9 @@
                                 <label class="block">
                                     <span class="text-slate-500">Max Supply*</span>
                                     <input v-model="supply"
-                                    type="text" title="Supply is 1 or higher & max the claim amount"
+                                    type="number" title="Supply is 1 or higher & max the claim amount"
                                     class="mt-1 block w-full rounded-md border-gray-300 bg-slate-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                    placeholder="21,000,000"
+                                    placeholder="21000000"
                                     minlength="1"
                                     required
                                     />
@@ -114,9 +114,30 @@
                                 </label>
                                 </div>
                             </div>
-
+                            <dialog ref="inscribeDialog" class="p-5 bg-slate-50 border border-slate-200 shadow-lg rounded-xl dark:bg-slate-900 dark:border-black dark:text-slate-300 max-w-full w-[400px]">
+                                <h3 class="w-full flex justify-between items-center mb-4 text-xl">
+                                    <span>Confirm Inscription</span>
+                                    <button @click="() => inscribeDialog.close()" class="p-2 rounded-full -m-4 hover:bg-gray-100 text-gray-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                                            <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </h3>
+                                <div class="my-6 text-center">
+                                    {{ ticker.toUpperCase() }} <span v-if="supply">({{ supply }} Tokens)</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <button @click="() => inscribeDialog.close()" class="btn-secondary">
+                                        Cancel
+                                    </button>
+                                    <button @click="() => onSubmit()" type="submit" class="btn-primary">
+                                        Inscribe 
+                                    </button>
+                                </div>
+                            </dialog>
                             <p class="text-sm h-8 text-slate-500 mt-4">{{ operation }}</p>
-                            <button type="submit" class="btn-primary">Inscribe Token</button>
+                            <button @click="() => openInscribeDialog()" class="btn-primary">Inscribe {{ ticker.toUpperCase() }}</button>
                         </form>
                     </div>
                     <div v-bind:class="{'hidden': openTab !== 2, 'block': openTab === 2}">
@@ -156,6 +177,12 @@ const account = inject('walletConnection')
 const contractAt = inject('contract')
 const isConnected = computed(() => !!account.address)
 
+const inscribeDialog = ref(null)
+
+const openInscribeDialog = async() => {
+    inscribeDialog.value.showModal()
+}
+
 /*Inscribe TZRC-20 */
 const protocol = ref('tzrc-20')
 const ticker = ref('')
@@ -186,6 +213,8 @@ const inscribe = async (protocol, claim) => {
         if (minting.value) return
 
         minting.value = true
+
+        inscribeDialog.value.close()
 
         if (!isConnected.value) throw new Error('Connect wallet first')
 
