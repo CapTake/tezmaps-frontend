@@ -112,7 +112,6 @@
 <script setup>
 import { inject, ref, watchEffect, computed } from 'vue'
 import { api, TRUSTED, DEPRECATED } from '../util/api'
-import { ticketParams } from '../util/ticket'
 import BigNumber from 'bignumber.js'
 import { toast } from 'vue3-toastify'
 import { validateAddress, char2Bytes, bytes2Char } from '@taquito/utils'
@@ -183,8 +182,7 @@ const transferTicket = inject('transferTicket')
 const sendTicket = async () => {
     try {
         /// So. Taquito doesn't let you use wallet to send tickets right now.
-        /// Temporary solution is to make as smart contract which accepts ticket and recipient address and immediately
-        /// transfers ticket to the recipient. Thus we could use wallet.at(contract) to send tickets.
+        /// Temporary solution is to make in browser wallet
         if (sending.value || !selection.value) return
         sending.value = true
 
@@ -194,10 +192,10 @@ const sendTicket = async () => {
             throw new Error('Only Tezmaps sending supported so far.')
         }
 
-        const destination = destAddress.value
+        const recipient = destAddress.value
         const amount = sendAmount.value
 
-        if (validateAddress(destination) !== 3) {
+        if (validateAddress(recipient) !== 3) {
             destError.value = true
             return
         }
@@ -206,35 +204,23 @@ const sendTicket = async () => {
             throw new Error('Connect wallet first!')
         }
 
-        const params = ticketParams(destination, protocol, char2Bytes(content), amount, TICKETER)
+        
+        const op = await transferTicket({
+            protocol,
+            content: char2Bytes(content),
+            amount,
+            recipient,
+            entryPoint: 'default'
+        })
 
         sendDialog.value.close()
-        
-        throw new Error('Not supported yet')
-        // const ticketer = await contractAt(TICKETER)
 
-        // const op = await transferTicket(params)
-        const ticket = { ticketer: TICKETER, value: { 0: protocol, 1: char2Bytes(content) }, amount: 1 }
-        const proxy = await contractAt(PROXY)
-
-        console.log(proxy.methodsObject.default().getSignature())
-
-        const op = proxy.methodsObject.default({ ticket, to_: destination }).send()
-
-        // const op = await proxy.methods.default(
-        //     {
-        //         ticketer: TICKETER,
-        //         value: { 0: protocol, 1: char2Bytes(content) },
-        //         amount: new BigNumber(1)
-        //     },
-        //     destination
-        // ).send()
+        await op.confirmation(1)
 
         /*
         {"val":{"prim":"pair","args":[{"prim":"ticket","args":[{"prim":"pair","args":[{"prim":"string"},{"prim":"bytes"}]}],"annots":["%ticket"]},{"prim":"address","annots":["%to_"]}]},"idx":0}
         */
 
-        await op.confirmation(1)
         toast.success(`Succseefully sent ${content}`, { autoClose: 3000, theme: 'colored', position: 'top-center' })
 
     } catch (e) {
