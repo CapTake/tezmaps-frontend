@@ -259,8 +259,7 @@ const onTouchEnd = () => {
     stage.draggable(true)
 }
 
-const OCCUPIED_COLOR = '#2F59ED'
-const OWNED_COLOR = '#62cb3b'
+const COLORS = ['#a0a0a0', '#2F59ED', '#62cb3b']
 
 const init = () => {
 
@@ -293,9 +292,9 @@ const init = () => {
         const width = blockSize - 1
         const height = blockSize - 1
 
-        const fill = occupied === 0 ? '#a0a0a0' : OCCUPIED_COLOR
+        const fill = COLORS[occupied]
 
-        if (occupied === 2) { fill = OWNED_COLOR }
+        // if (occupied === 2) { fill = OWNED_COLOR }
 
         const text = new Konva.Text({
             x,

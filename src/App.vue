@@ -10,7 +10,8 @@
 
 <script setup>
 import BottomNav from './components/BottomNav.vue';
-import TezosWallet from './components/TezosWallet.vue'
+// import TezosWallet from './components/TezosWallet.vue'
+import TezosWallet from './components/BrowserWallet.vue'
 import TopNav from './components/TopNav.vue';
 
 const RPC = import.meta.env.VITE_TEZOS_RPC_URL
