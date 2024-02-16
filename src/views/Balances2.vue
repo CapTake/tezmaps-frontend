@@ -157,7 +157,7 @@ const isOwn = computed(() => account.address && account.address === props.wallet
 
 const holder = computed(() => {
     if (isOwn.value) return 'Your'
-    const address = account.address || ''
+    const address = props.wallet || ''
     return `${address.slice(0, 4)}...${address.slice(-4)}`
 })
 
