@@ -1,6 +1,6 @@
 <template>
     <div class="w-full min-h-screen reative px-5 ">
-        <h1 class="mt-10 mb-6 tezt text-xl">Your Holdings</h1>
+        <h1 class="mt-10 mb-6 tezt text-xl">{{ holder }} Holdings</h1>
         <div v-if="loading" class="inset-0 flex justify-center items-center pointer-events-none">
             <div class="flex justify-center items-center max-w-[300px] rounded-lg py-20 px-16 shadow-lg">
                 <svg aria-hidden="true" class="w-12 h-12 text-slate-400 animate-spin fill-white" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -57,7 +57,7 @@
                         {{ item.balance }} {{ item.ticker }}
                     </div>
                 </div>
-                <div class="w-full flex justify-around items-end gap-2 md:gap-3 xl:gap-4 mb-4 text-sm lg:text-base">
+                <div v-if="isOwn" class="w-full flex justify-around items-end gap-2 md:gap-3 xl:gap-4 mb-4 text-sm lg:text-base">
                     <button @click="comingSoon" class="text-sm bg-slate-700 text-white hover:bg-slate-500 flex justify-center gap-2 rounded py-1.5 px-4 items-center flex-grow">
                         List
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 hidden sm:inline">
@@ -81,7 +81,7 @@
                 {{ p }}
             </button>
         </div>
-        <dialog ref="sendDialog" class="p-5 shadow-lg rounded-xl shadow-md bg-white dark:bg-darkgrey dark:text-light max-w-full w-[400px]">
+        <dialog ref="sendDialog" class="p-5 shadow-lg rounded-xl bg-white dark:bg-darkgrey dark:text-light max-w-full w-[400px]">
             <h3 class="w-full flex justify-between items-center mb-4 text-xl">
                 <span>Sending</span>
                 <button @click="() => sendDialog.close()" class="p-2 rounded-full -m-4 hover:bg-gray-100 text-gray-700">
@@ -141,22 +141,33 @@ import { toast } from 'vue3-toastify'
 import { validateAddress, char2Bytes, bytes2Char } from '@taquito/utils'
 // import { TicketTokenParams } from '@taquito/rpc'
 
-
-const TICKETER = import.meta.env.VITE_TICKETER
-const PROXY = import.meta.env.VITE_PROXY_CONTRACT
+const props = defineProps({
+  wallet: String
+})
 
 const account = inject('walletConnection')
+
 const BALANCE_VIEW = 'balance_view'
 
 const loading = ref(false)
 
 const sending = ref(false)
 
+const isOwn = computed(() => account.address && account.address === props.wallet)
+
+const holder = computed(() => {
+    if (isOwn.value) return 'Your'
+    const address = account.address || ''
+    return `${address.slice(0, 4)}...${address.slice(-4)}`
+})
+
 const items = ref([])
 const page = ref(1)
 const perPage = ref(25)
 const totalPages = ref(1)
-const filter = computed(() => `holder = "${account.address || ''}"`)
+
+const filter = computed(() => `holder = "${props.wallet || ''}"`)
+
 const paging = computed(() => {
     const current = page.value
     const last = totalPages.value
@@ -177,6 +188,7 @@ const paging = computed(() => {
     }
     return [1, ...res]
 })
+
 const destAddress = ref(null)
 const destError = ref(false)
 const sendDialog = ref(null)
@@ -204,13 +216,13 @@ const openSendConfirmationDialog = async() => {
     sendConfirmationDialog.value.showModal()
 }
 
-const contractAt = inject('contract')
+// const contractAt = inject('contract')
 const transferTicket = inject('transferTicket')
 
 const sendTicket = async () => {
     try {
         /// So. Taquito doesn't let you use wallet to send tickets right now.
-        /// Temporary solution is to make in browser wallet
+        /// Temporary solution is to make in-browser wallet
         if (sending.value || !selection.value) return
         sending.value = true
 
@@ -252,7 +264,7 @@ const sendTicket = async () => {
         {"val":{"prim":"pair","args":[{"prim":"ticket","args":[{"prim":"pair","args":[{"prim":"string"},{"prim":"bytes"}]}],"annots":["%ticket"]},{"prim":"address","annots":["%to_"]}]},"idx":0}
         */
 
-        toast.success(`Succseefully sent ${content}`, { autoClose: 3000, theme: 'colored', position: 'top-center' })
+        toast.success(`Successfully sent ${content}`, { autoClose: 3000, theme: 'colored', position: 'top-center' })
 
     } catch (e) {
         console.log(e)

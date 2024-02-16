@@ -5,14 +5,12 @@ import Balances from '../views/Balances2.vue'
 import Mint from '../views/Mint.vue'
 import Create from '../views/Create.vue'
 import Tokens from '../views/Tokens.vue'
-import Users from '../views/Users.vue'
 import Inscriptions from '../views/Inscriptions.vue'
 
 const routes = [
   { path: '/', component: Home, meta: { title: 'Mint' } },
   { path: '/docs', component: ComingSoon, meta: { title: 'Docs' } },
-  { path: '/balance', component: Balances, meta: { title: 'Balance', authenticated: true } },
-  { path: '/users/:wallet', name: 'user', component: Users, meta: { title: 'User Profile' }, props: true },
+  { path: '/users/:wallet', name: 'users', component: Balances, meta: { title: 'User Holdings' }, props: true },
   { path: '/trade', component: ComingSoon, meta: { title: 'Marketplace' } },
   { path: '/mint/:protocol/:tick', name: 'mint', component: Mint, meta: { title: 'Mint Token' }, props: true },
   { path: '/inscriptions/:protocol/:tick', name: 'inscriptions', component: Inscriptions, meta: { title: 'Inscription Details' }, props: true },

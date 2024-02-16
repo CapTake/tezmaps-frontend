@@ -185,9 +185,6 @@ const transferTicket = inject('transferTicket')
 
 const sendTicket = async () => {
     try {
-        /// So. Taquito doesn't let you use wallet to send tickets right now.
-        /// Temporary solution is to make as smart contract which accepts ticket and recipient address and immediately
-        /// transfers ticket to the recipient. Thus we could use wallet.at(contract) to send tickets.
         if (sending.value || !selection.value) return
         sending.value = true
 

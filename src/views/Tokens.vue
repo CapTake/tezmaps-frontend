@@ -50,6 +50,7 @@ import { decodeBytes } from '../util/tzrc-20'
 import BigNumber from 'bignumber.js'
 import { TRUSTED, DEPRECATED } from '../util/api'
 
+const TICKETER = import.meta.env.VITE_TICKETER
 
 const loading = ref(false)
 
@@ -68,7 +69,7 @@ const loadData = async () => {
 
         loading.value = true
 
-        const response = await fetch('https://api.tzkt.io/v1/contracts/KT1UURhEJPhvqp4xgF4C9ZVddJ8Qd34hHXtZ/bigmaps/state/keys?active=true&select=key,value&key.as=tzrc-20*');
+        const response = await fetch(`https://api.tzkt.io/v1/contracts/${TICKETER}/bigmaps/state/keys?active=true&select=key,value&key.as=tzrc-20*`);
         const block = await response.json()
 
         console.log(block)
@@ -107,7 +108,7 @@ const loadData = async () => {
         })
         
         loading.value = true
-        console.log(tokens.value)
+        // console.log(tokens.value)
 
     } catch (e) {
         console.log(e)
