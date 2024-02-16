@@ -81,7 +81,7 @@
                 {{ p }}
             </button>
         </div>
-        <dialog ref="sendDialog" class="p-5 rounded-lg shadow-md bg-white dark:bg-darkgrey dark:text-light max-w-full w-[400px]">
+        <dialog ref="sendDialog" class="p-5 shadow-lg rounded-xl shadow-md bg-white dark:bg-darkgrey dark:text-light max-w-full w-[400px]">
             <h3 class="w-full flex justify-between items-center mb-4 text-xl">
                 <span>Sending</span>
                 <button @click="() => sendDialog.close()" class="p-2 rounded-full -m-4 hover:bg-gray-100 text-gray-700">
@@ -93,16 +93,40 @@
             <div v-if="selection" class="my-6 text-center">
                 {{ selection.content }}
             </div>
-            <label class="my-6 text-center flex gap-2 justify-between items-center border  p-2 rounded whitespace-nowrap" :class="{'border-slate-300': !destError, 'border-red-400': destError}">
+            <label class="my-6 text-center flex gap-2 justify-between items-center border p-2 rounded whitespace-nowrap" :class="{'border-slate-300': !destError, 'border-red-400': destError}">
                 <span class="flex-shrink">To:</span>
-                <input type="text" v-model.trim="destAddress" class="flex-grow outline-none dark:bg-slate-300" placeholder="tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV" novalidate @focus="destError = false" /> 
+                <input type="text" min="36" max="36" v-model.trim="destAddress" class="flex-grow text-sm outline-none dark:bg-slate-300 dark:text-slate-900" placeholder="tz1SaxU1fWespNC8xLR82H1C1YqRMrRLCyCV" novalidate @focus="destError = false" /> 
             </label>
             <div class="flex justify-between items-center">
-                <button @click="() => sendDialog.close()" class="px-5 py-1.5 hover:bg-slate-500 rounded  bg-slate-700 text-white hover:bg-slate-500">
+                <button @click="() => sendDialog.close()" class="btn-secondary">
+                    Cancel
+                </button>
+                <button @click="() => openSendConfirmationDialog()" class="btn-primary">
+                    Send
+                </button>
+            </div>
+        </dialog>
+        <dialog ref="sendConfirmationDialog" class="p-5 bg-slate-50 border border-slate-200 shadow-lg rounded-xl dark:bg-slate-900 dark:border-black dark:text-slate-300 w-[400px]">
+            <h3 class="w-full flex justify-between items-center mb-4 text-xl">
+                <span>Confirm Sending</span>
+                <button @click="() => sendConfirmationDialog.close()" class="p-2 rounded-full -m-4 hover:bg-gray-100 text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                        <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </h3>
+            <div v-if="selection" class="my-6 text-center">
+                {{ selection.content }}
+            </div>
+            <label class="my-6 text-center flex gap-2 justify-between items-center border  p-2 rounded whitespace-nowrap" :class="{'border-slate-300': !destError, 'border-red-400': destError}">
+                <span class="flex-shrink text-sm">To: {{ destAddress }}</span>
+            </label>
+            <div class="flex justify-between items-center">
+                <button @click="() => sendConfirmationDialog.close()" class="btn-secondary">
                     Cancel
                 </button>
                 <button @click="sendTicket" class="btn-primary">
-                    Send
+                    Confirm
                 </button>
             </div>
         </dialog>
@@ -156,6 +180,7 @@ const paging = computed(() => {
 const destAddress = ref(null)
 const destError = ref(false)
 const sendDialog = ref(null)
+const sendConfirmationDialog = ref(null)
 
 const selection = ref(null)
 const sendAmount = ref(1)
@@ -175,6 +200,9 @@ const openSendDialog = (sel) => {
     selection.value = { protocol, content, balance: 1 }
     sendDialog.value.showModal()
 }
+const openSendConfirmationDialog = async() => {
+    sendConfirmationDialog.value.showModal()
+}
 
 const contractAt = inject('contract')
 const transferTicket = inject('transferTicket')
@@ -186,9 +214,12 @@ const sendTicket = async () => {
         if (sending.value || !selection.value) return
         sending.value = true
 
+        sendConfirmationDialog.value.close()
+
         const { protocol, content } = selection.value
 
         if (protocol !== 'tezmap') {
+            sendDialog.value.close()
             throw new Error('Only Tezmaps sending supported so far.')
         }
 

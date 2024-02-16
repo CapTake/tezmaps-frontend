@@ -12,7 +12,7 @@
             <span>{{ percentMinted }}%</span>
         </div>
         <p class="transition-all text-sm h-10 text-slate-500 mt-4">{{ operation }}</p>
-        <button v-if="canMint" @click="mint" class="btn-primary shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-950/90">Claim {{ limit }} {{ props.tick.toUpperCase() }}</button>
+        <button v-if="canMint" @click="() => openMintDialog()" class="btn-primary shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-950/90">Claim {{ limit }} {{ props.tick.toUpperCase() }}</button>
         <button v-else class="btn-primary">{{ mintStatusLabel }}</button>
 
         <div v-if="holders.length > 0" class="mt-12">
@@ -22,6 +22,27 @@
  {{ item.address.slice(0,4) }}<span class="hidden md:inline">{{ item.address.slice(4,32) }}</span><span class="md:hidden">..</span>{{ item.address.slice(-4) }}</router-link> {{item.balance}}
             </div>
         </div>
+        <dialog ref="mintDialog" class="p-5 bg-slate-50 border border-slate-200 shadow-lg rounded-xl dark:bg-slate-900 dark:border-black dark:text-slate-300 max-w-full w-[400px]">
+            <h3 class="w-full flex justify-between items-center mb-4 text-xl">
+                <span>Confirm Claim</span>
+                <button @click="() => mintDialog.close()" class="p-2 rounded-full -m-4 hover:bg-gray-100 text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                        <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </h3>
+            <div class="my-6 text-center">
+                {{ limit }} {{ props.tick.toUpperCase() }}
+            </div>
+            <div class="flex justify-between items-center">
+                <button @click="() => mintDialog.close()" class="btn-secondary">
+                    Cancel
+                </button>
+                <button @click="mint" class="btn-primary">
+                    Claim 
+                </button>
+            </div>
+        </dialog>
     </div>
 </template>
 
@@ -73,7 +94,11 @@ const canMint = computed(() => minted.value.lt(supply.value))
 const mintStart = computed(() => nbf.value > 0 ? new Date(nbf.value * 1000).toLocaleString() : false)
 const mintEnd = computed(() => exp.value > 0 ? new Date(exp.value * 1000).toLocaleString() : false)
 
-const shortenWallet  = (wallet) => { return wallet.slice(0,4) + '<span class="md-inline">..</span>' + wallet.slice(-4) }
+const mintDialog = ref(null)
+
+const openMintDialog = async() => {
+    mintDialog.value.showModal()
+}
 
 const mintStatusLabel = computed(() => {
     const now = Date.now() / 1000
@@ -97,6 +122,8 @@ const inscribe = async (protocol, claim) => {
         minting.value = true
 
         if (!isConnected.value) throw new Error('Connect wallet first')
+
+        mintDialog.value.close()
 
         operation.value = 'Preparing transaction...'
 
