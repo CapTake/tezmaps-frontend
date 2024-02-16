@@ -17,9 +17,17 @@
 
         <div v-if="holders.length > 0" class="mt-12">
             <h3 class="text-xl mb-1">Top Holders<span class="text-slate-500 text-sm ps-1">({{holders.length}} total)</span></h3>
-            <div class="text-slate-500 text-sm" v-for="(item, index) in holders.slice(0,50)" :key="item.id">
-                #{{ (index + 1) }} <router-link :to="{ name: 'user', params: { wallet: item.address }}" class="align-middle inline-block">
- {{ item.address.slice(0,4) }}<span class="hidden md:inline">{{ item.address.slice(4,32) }}</span><span class="md:hidden">..</span>{{ item.address.slice(-4) }}</router-link> {{item.balance}}
+            <div class="text-slate-500 text-sm flex justify-between gap-4 py-2 hover:text-slate-600 dark:hover:text-slate-400" v-for="(item, index) in holders.slice(0,50)" :key="item.id">
+                <span>
+                    #{{ (index + 1) }}
+                </span>
+                <router-link :to="{ name: 'users', params: { wallet: item.address }}" class="align-middle inline-block">
+                    {{ item.address.slice(0,4) }}<span class="hidden md:inline">{{ item.address.slice(4,32) }}</span>
+                    <span class="md:hidden">..</span>{{ item.address.slice(-4) }}
+                </router-link> 
+                <span>
+                    {{item.balance}}
+                </span>
             </div>
         </div>
         <dialog ref="mintDialog" class="p-5 bg-slate-50 border border-slate-200 shadow-lg rounded-xl dark:bg-slate-900 dark:border-black dark:text-slate-300 max-w-full w-[400px]">
