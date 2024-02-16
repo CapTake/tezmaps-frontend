@@ -16,8 +16,8 @@
         <button v-else class="btn-primary">{{ mintStatusLabel }}</button>
 
         <div v-if="holders.length > 0" class="mt-12">
-            <h3 class="text-xl mb-1">Top Holders<span class="text-slate-500 text-sm ps-1">({{holders.length}} total)</span></h3>
-            <div class="text-slate-500 text-sm flex justify-between gap-4 py-2 hover:text-slate-600 dark:hover:text-slate-400" v-for="(item, index) in holders.slice(0,50)" :key="item.id">
+            <h3 class="text-xl mb-6">Top Holders<span class="text-slate-500 text-sm ps-1">({{holders.length}} total)</span></h3>
+            <div class="max-w-sm text-slate-500 text-sm flex justify-between gap-4 pb-2 hover:text-slate-600 dark:hover:text-slate-400 mx-auto" v-for="(item, index) in holders.slice(0,50)" :key="item.id">
                 <span>
                     #{{ (index + 1) }}
                 </span>
