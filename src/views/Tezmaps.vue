@@ -8,8 +8,8 @@
             <input type="number" class="text-black w-[125px] text-lg rounded-xl bg-slate-300 " style="opacity:1!Important;" :step="5000" :min="0" :max="lastBlock" v-model.number="firstBlock" @change="(e) => {offset = +e.target.value}" @input="(e) => console.log(e.target.value, offset)">
             <div class="text-xs text-slate-500 pt-0.5 pb-3">Choose only 5,000 Steps</div>
             <input v-model.number="firstBlock" type="range" :min="0" :max="lastBlock" :step="5000" @change="(e) => {offset = +e.target.value}" @input="(e) => console.log(e.target.value, offset)" class="w-full accent-slate-400"> 
-            <h3 class="pt-6 dark:text-slate-300">Tezmaps is the first Tezoscription. Each Tezos Block is represented by a uniquely claimable Tezmap.</h3>
-            <h3 class="pt-6 dark:text-slate-500">Track your claims <router-link to="/balance" class="transition-all underline hover:text-blue-500">here</router-link> until Tezoscriptions get wallet support.</h3>
+            <h3 class="pt-6 dark:text-slate-300">Tezmaps is the first Tezoscriptions. Each Tezos Block is represented by a uniquely claimable Tezmap.</h3>
+            <!-- <h3 class="pt-6 dark:text-slate-500">Track your claims <router-link to="/balance" class="transition-all underline hover:text-blue-500">here</router-link> until Tezoscriptions get wallet support.</h3> -->
         </div>
     </div>
     <div class="fixed w-full h-0 bottom-0 z-50">

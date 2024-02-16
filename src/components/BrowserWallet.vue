@@ -11,9 +11,9 @@
                 </button>
             </h3>
             <h4 span class="text-sm mb-4 text-slate-500">Experimental until Wallet support</h4>
-            <textarea v-model.trim="mnemonic" @focus="errorMessage = ''" class="text-sm rounded-lg w-full h-[120px] text-slate-900" placeholder="Enter mnemonic here. DO NOT USE YOUR MAIN WALLET HERE, create a second wallet that gets used only for Tezi Network until wallets support Tezoscriptions."></textarea>    
+            <textarea type="password" v-model.trim="mnemonic" @focus="errorMessage = ''" class="text-sm rounded-lg w-full h-[120px] text-slate-900" placeholder="Enter Secret Key or Mnemonic here. DO NOT USE YOUR MAIN WALLET HERE, create a second wallet that gets used only for Tezi Network until wallets support Tezoscriptions."></textarea>    
             <input v-model="password" type="password" @focus="errorMessage = ''" class="text-sm rounded-lg w-full text-slate-900" placeholder="Set Password"> 
-            <p class="transition-all text-sm h-7 mt-2 text-slate-500 text-center">{{ errorMessage }}</p>
+            <p class="transition-all text-sm min-h-7 my-2 text-slate-500 text-center">{{ errorMessage }}</p>
             <button @click="importSecret" class="btn-primary w-full">Import</button>
         </div>
         <div v-if="step === 2" class="p-5 bg-slate-50 w-sm border border-slate-200 shadow-lg rounded-xl dark:bg-slate-900 dark:border-black dark:text-slate-300">
@@ -76,7 +76,7 @@ import { reactive, provide } from 'vue'
 import { useStorage, onClickOutside, useConfirmDialog } from '@vueuse/core'
 import { ticketParams } from '../util/ticket'
 
-const { isRevealed, reveal, confirm, cancel, onReveal, onConfirm, onCancel }  = useConfirmDialog()
+const { isRevealed, reveal, confirm, cancel }  = useConfirmDialog()
 import { encrypt, decrypt } from '../util/aes'
 
 const TICKETER = import.meta.env.VITE_TICKETER
@@ -115,12 +115,19 @@ const importSecret = async () => {
 
         const value = mnemonic.value
 
-        const seed = Bip39.mnemonicToEntropy(value)
+        let seed
+        if (value.includes(' ')) {
+            seed = Bip39.mnemonicToEntropy(value)
+        } else {
+            // throws is key is invalid
+            await InMemorySigner.fromSecretKey(value)
+            seed = value
+        }
 
         if (!password.value || password.value.length < 8) throw new Error('Password is too short')
 
         encryptedSeed.value = await encrypt(password.value, seed)
-        // console.log(encryptedSeed.value)
+
         mnemonic.value = ''
         confirm(value)
     } catch (e) {
@@ -134,7 +141,7 @@ const decryptStoredSecret = async () => {
 
         const seed = await decrypt(password.value, encryptedSeed.value)
 
-        const mnemonic = Bip39.entropyToMnemonic(seed)
+        const mnemonic = seed.includes('s') ? seed : Bip39.entropyToMnemonic(seed)
 
         confirm(mnemonic)
     } catch (e) {
@@ -147,8 +154,6 @@ const getMnemonic = async () => {
 
     const { data, isCanceled } = await reveal()
 
-    console.log(data, isCanceled)
-    
     if (isCanceled) throw new Error('Cancelled')
 
     return data
@@ -186,7 +191,7 @@ const getActiveAccount = async () => {
     try {
         const mnemonic = await getMnemonic()
 
-        signer.value = InMemorySigner.fromMnemonic({ mnemonic })
+        signer.value = mnemonic.includes(' ') ? InMemorySigner.fromMnemonic({ mnemonic }) : await InMemorySigner.fromSecretKey(mnemonic)
 
         Tezos.setSignerProvider(signer.value)
 
